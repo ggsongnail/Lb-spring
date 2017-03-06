@@ -16,11 +16,11 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.spoom.entity.dictionary.DictionaryClassify;
 import com.spoom.entity.material.MaterialClassify;
 import com.spoom.entity.material.MaterialProduct;
-import com.spoom.service.ArrayCutting;
 import com.spoom.service.dictionary.DictionaryClassifyService;
 import com.spoom.service.dictionary.DictionaryService;
 import com.spoom.service.material.MaterialClassifyService;
 import com.spoom.service.material.MaterialProductService;
+import com.spoom.util.ArrayCutting;
 
 /**
  * 

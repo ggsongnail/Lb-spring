@@ -1,4 +1,4 @@
-package com.spoom.service;
+package com.spoom.util;
 
 import java.util.HashMap;
 import java.util.Map;
