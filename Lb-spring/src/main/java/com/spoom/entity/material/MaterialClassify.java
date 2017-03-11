@@ -1,21 +1,26 @@
 package com.spoom.entity.material;
 
 import java.util.Date;
+import java.util.List;
 
 import javax.persistence.Cacheable;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Version;
 
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.spoom.entity.dictionary.DictionaryClassify;
 
 @Entity
@@ -31,6 +36,9 @@ public class MaterialClassify {
 	@ManyToOne
 	@JoinColumn(name="dictionary_classify_id")
 	private DictionaryClassify dictionaryClassify;
+	@OneToMany(cascade = {CascadeType.ALL},mappedBy = "materialClassify")
+	@JsonIgnore
+	private List<MaterialProduct> materialProducts;
 	private String name;
 	private Date createDate;
 	private Date updateDate;
@@ -38,6 +46,7 @@ public class MaterialClassify {
 	private int status;
 	@Version
 	private Integer version;
+	private Integer place;
 	public int getId() {
 		return id;
 	}
@@ -49,6 +58,12 @@ public class MaterialClassify {
 	}
 	public void setDictionaryClassify(DictionaryClassify dictionaryClassify) {
 		this.dictionaryClassify = dictionaryClassify;
+	}
+	public List<MaterialProduct> getMaterialProducts() {
+		return materialProducts;
+	}
+	public void setMaterialProducts(List<MaterialProduct> materialProducts) {
+		this.materialProducts = materialProducts;
 	}
 	public String getName() {
 		return name;
@@ -85,5 +100,11 @@ public class MaterialClassify {
 	}
 	public void setVersion(Integer version) {
 		this.version = version;
+	}
+	public Integer getPlace() {
+		return place;
+	}
+	public void setPlace(Integer place) {
+		this.place = place;
 	}
 }

@@ -46,6 +46,7 @@ public class Dictionary implements Serializable{
 	@Version
 	private Integer version;
 	//@OneToMany(fetch=FetchType.EAGER ,cascade = {CascadeType.ALL},mappedBy = "dictionary") 
+	//懒加载目前只能在同一事务才能正常get
 	@OneToMany(cascade = {CascadeType.ALL},mappedBy = "dictionary") 
 	@JsonIgnore
 	private List<DictionaryClassify> dictionaryClassifys;

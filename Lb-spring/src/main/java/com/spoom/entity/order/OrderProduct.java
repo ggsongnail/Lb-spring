@@ -1,8 +1,9 @@
-package com.spoom.entity.material;
+package com.spoom.entity.order;
 
 import java.util.Date;
 
 import javax.persistence.Cacheable;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -11,32 +12,31 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
-import javax.persistence.Transient;
 import javax.persistence.Version;
 
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
-import com.spoom.entity.order.OrderProduct;
+import com.spoom.entity.material.MaterialProduct;
 
 @Entity
-@Table(name="material_product")
+@Table(name="order_product")
 @DynamicInsert(true)
 @DynamicUpdate(true)
 @Cacheable
-public class MaterialProduct {
+public class OrderProduct {
 	@Id
 	@Column(name="id")
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private int id;
 	@ManyToOne
-	@JoinColumn(name="material_classify_id")
-	private MaterialClassify materialClassify;
-	private String name;
-	private String standard;//规格包装比如５L 5KG
-	private double price;
-	private double originalPrice;
-	private String operator;
+	@JoinColumn(name="order_id")
+	private OrderLb orderLb;
+	@ManyToOne
+	@JoinColumn(name="product_id")
+	private MaterialProduct materialProduct;
+	private int count;
+	private double total;
 	private Date createDate;
 	private Date updateDate;
 	private Date deleteDate;
@@ -44,49 +44,35 @@ public class MaterialProduct {
 	@Version
 	private Integer version;
 	
-	@Transient
-	private OrderProduct orderProduct;
 	public int getId() {
 		return id;
 	}
 	public void setId(int id) {
 		this.id = id;
 	}
-	public MaterialClassify getMaterialClassify() {
-		return materialClassify;
+	public OrderLb getOrderLb() {
+		return orderLb;
 	}
-	public void setMaterialClassify(MaterialClassify materialClassify) {
-		this.materialClassify = materialClassify;
+	public void setOrderLb(OrderLb orderLb) {
+		this.orderLb = orderLb;
 	}
-	public String getName() {
-		return name;
+	public MaterialProduct getMaterialProduct() {
+		return materialProduct;
 	}
-	public void setName(String name) {
-		this.name = name;
+	public void setMaterialProduct(MaterialProduct materialProduct) {
+		this.materialProduct = materialProduct;
 	}
-	public String getStandard() {
-		return standard;
+	public int getCount() {
+		return count;
 	}
-	public void setStandard(String standard) {
-		this.standard = standard;
+	public void setCount(int count) {
+		this.count = count;
 	}
-	public double getPrice() {
-		return price;
+	public double getTotal() {
+		return total;
 	}
-	public void setPrice(double price) {
-		this.price = price;
-	}
-	public double getOriginalPrice() {
-		return originalPrice;
-	}
-	public void setOriginalPrice(double originalPrice) {
-		this.originalPrice = originalPrice;
-	}
-	public String getOperator() {
-		return operator;
-	}
-	public void setOperator(String operator) {
-		this.operator = operator;
+	public void setTotal(double total) {
+		this.total = total;
 	}
 	public Date getCreateDate() {
 		return createDate;
@@ -117,11 +103,5 @@ public class MaterialProduct {
 	}
 	public void setVersion(Integer version) {
 		this.version = version;
-	}
-	public OrderProduct getOrderProduct() {
-		return orderProduct;
-	}
-	public void setOrderProduct(OrderProduct orderProduct) {
-		this.orderProduct = orderProduct;
 	}
 }

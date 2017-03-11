@@ -3,6 +3,8 @@ package com.spoom.service.material;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -37,7 +39,16 @@ public class MaterialClassifyService {
 		materialClassifyDao.delete(id);
 	}
 	
-	public List<MaterialClassify> findByDictionaryClassify(DictionaryClassify dictionaryClassify){
-		return materialClassifyDao.findByDictionaryClassify(dictionaryClassify);
+	public List<MaterialClassify> findByDictionaryClassifyOrderByName(DictionaryClassify dictionaryClassify){
+		return materialClassifyDao.findByDictionaryClassifyOrderByName(dictionaryClassify);
 	}
+	
+	public List<MaterialClassify> findAll(Sort sort){
+		return materialClassifyDao.findAll(sort);
+	}
+	
+	public List<MaterialClassify> findByName(String name){
+		return materialClassifyDao.findByName(name);
+	}
+	
 }

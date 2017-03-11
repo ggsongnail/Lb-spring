@@ -102,11 +102,11 @@ public class ArrayCutting {
     	ArrayCutting ac = new ArrayCutting();
 		int[] arrays = ac.cutit(a);  
         int selectedSum = 0;  
-        Map map = new HashMap<Integer,Integer>();
+        Map<Integer,Integer> map = new HashMap<Integer,Integer>();
         for (int i=0;i<arrays.length;i++){  
             if (arrays[i]>0){  
             	if(map.containsKey(arrays[i])){
-            		map.put(arrays[i], Integer.sum((Integer) map.get(arrays[i]), 1));
+            		map.put(arrays[i],  map.get(arrays[i])+1);
             	}else{
             		map.put(arrays[i],1);
             	}

@@ -1,6 +1,5 @@
 package com.spoom.service;
 
-import java.util.Date;
 import java.util.List;
 
 import org.junit.Test;
@@ -8,14 +7,17 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.spoom.entity.dictionary.Dictionary;
 import com.spoom.entity.dictionary.DictionaryClassify;
-import com.spoom.entity.material.MaterialProduct;
+import com.spoom.entity.material.MaterialClassify;
 import com.spoom.service.dictionary.DictionaryClassifyService;
 import com.spoom.service.dictionary.DictionaryService;
 import com.spoom.service.material.MaterialClassifyService;
 import com.spoom.service.material.MaterialProductService;
+import com.spoom.service.order.OrderLbService;
+import com.spoom.service.order.OrderProductService;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration("classpath:spring-jpa.xml")
@@ -28,18 +30,15 @@ public class ServiceJunitTest {
 	private MaterialClassifyService materialClassifyService;
 	@Autowired
 	private MaterialProductService materialProductService;
+	@Autowired
+	private OrderLbService orderService;
+	@Autowired
+	private OrderProductService orderProductService;
 	
-	
+	@Test
 	public void testInsert(){
-		MaterialProduct mp = new MaterialProduct();
-		mp.setName("儿童漆");
-		mp.setStandard("5L");
-		mp.setPrice(858);
-		mp.setCreateDate(new Date());
-		mp.setUpdateDate(new Date());
-		mp.setDeleteDate(new Date());
-		
-		materialProductService.save(mp);
+		MaterialClassify mc = materialClassifyService.findById(1);
+		System.out.println(mc.getMaterialProducts());
 	}
 	
 	public void testUpdate(){
@@ -48,11 +47,13 @@ public class ServiceJunitTest {
 		dictionaryService.save(dictionary);
 	}
 	
-	@Test
+	
+	@Transactional
 	public void testFindJoin(){
-		DictionaryClassify dictionaryClassify = dictionaryClassifyService.findById(1);
-		List<MaterialProduct> mps = materialProductService.findByMaterialClassifyDictionaryClassify(dictionaryClassify);
-		System.out.println(mps.size()/7);
+		Dictionary dc = dictionaryService.findById(1);
+		for(DictionaryClassify dcc:dc.getDictionaryClassifys()){
+			System.out.println(dcc.getName());
+		}
 	}
 	public void testFindAll(){
 		List<Dictionary> ds = dictionaryService.findAll();
