@@ -62,9 +62,9 @@ public class DictionaryClassifyController {
 	
 	//材料分类字典类型
 	@ResponseBody
-	@RequestMapping(value="listbymaterial/json",method = RequestMethod.GET)
-	public List<DictionaryClassify> listmaterialjson(){
-		Dictionary dictionary = dictionaryService.findById(1);
+	@RequestMapping(value="list/json/{dictionaryId}",method = RequestMethod.GET)
+	public List<DictionaryClassify> listmaterialjson(@PathVariable int dictionaryId){
+		Dictionary dictionary = dictionaryService.findById(dictionaryId);
 		List<DictionaryClassify> dcs = dictionaryClassifyService.findAllByDictionary(dictionary);
 		return dcs;
 	}

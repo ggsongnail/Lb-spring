@@ -51,4 +51,8 @@ public class MaterialClassifyService {
 		return materialClassifyDao.findByName(name);
 	}
 	
+	public List<MaterialClassify> findByDictionaryClassifyIdIn(int[] ids){
+		return materialClassifyDao.findByDictionaryClassifyIdIn(ids);
+	}
+	
 }

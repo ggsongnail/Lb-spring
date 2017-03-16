@@ -14,4 +14,5 @@ import com.spoom.entity.dictionary.DictionaryClassify;
  */
 public interface DictionaryClassifyDao extends JpaRepository<DictionaryClassify, Integer>{
 	public List<DictionaryClassify> findAllByDictionary(Dictionary dictionary);
+	public List<DictionaryClassify> findByIdIn(int[] ids);
 }

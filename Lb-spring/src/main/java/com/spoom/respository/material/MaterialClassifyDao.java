@@ -17,4 +17,5 @@ import com.spoom.entity.order.OrderProduct;
 public interface MaterialClassifyDao extends JpaRepository<MaterialClassify, Integer>,JpaSpecificationExecutor<OrderProduct>{
 	public List<MaterialClassify> findByDictionaryClassifyOrderByName(DictionaryClassify dictionaryClassify);
 	public List<MaterialClassify> findByName(String name);
+	public List<MaterialClassify> findByDictionaryClassifyIdIn(int[] ids);
 }

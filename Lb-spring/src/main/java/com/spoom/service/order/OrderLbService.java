@@ -3,6 +3,8 @@ package com.spoom.service.order;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,6 +25,9 @@ public class OrderLbService {
 	public List<OrderLb> findAll() {
 		return orderDao.findAll();
 	}
+	public List<OrderLb> findAll(Specification<OrderLb> spec, Sort sort){
+		return orderDao.findAll(spec, sort);
+	}
 	
 	public OrderLb findById(int id){
 		return orderDao.findOne(id);
@@ -38,6 +43,10 @@ public class OrderLbService {
 	
 	public OrderLb findByOrderNo(String orderNo){
 		return orderDao.findByOrderNo(orderNo);
+	}
+	
+	public OrderLb findBySysNo(String sysNo){
+		return orderDao.findBySysNo(sysNo);
 	}
 	
 }

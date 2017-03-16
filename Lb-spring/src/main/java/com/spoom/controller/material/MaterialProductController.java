@@ -81,15 +81,16 @@ public class MaterialProductController {
 	
 	@ResponseBody
 	@RequestMapping(value="listformainbill/json/{orderNo}/{type}",method = RequestMethod.GET)
-	public Map listformainbill(@PathVariable String orderNo,@PathVariable int type){//0主要材料　１辅助材料
+	public Map listformainbill(@PathVariable String orderNo,@PathVariable int type){//0:main 1:assist
 		List<MaterialClassify> materialClassifys = new ArrayList<MaterialClassify>();
 		if(type==0){
-			//1在dictionary_classify表示主要材料
-			DictionaryClassify dictionaryClassify = dictionaryClassifyService.findById(1);
-			materialClassifys = materialClassifyService.findByDictionaryClassifyOrderByName(dictionaryClassify);
+			//在dictionary_classify 1乳胶漆类　5艺术漆类　6木漆/水性漆
+			int[] ids = new int[]{1,5,6};
+			materialClassifys = materialClassifyService.findByDictionaryClassifyIdIn(ids);
 		}else{
-			materialClassifys = materialClassifyService.findByName("辅助材料");
+			materialClassifys = materialClassifyService.findByName("fzcl");
 		}
+		
 		
 		Map<String,List<OrderProduct>> left = new HashMap<String,List<OrderProduct>>();
 		Map<String,List<OrderProduct>> right = new HashMap<String,List<OrderProduct>>();
@@ -115,13 +116,28 @@ public class MaterialProductController {
 				//mp.setOrderProduct(op);
 				ops.add(op);
 			}
-			if(mc.getPlace()!=null&&mc.getPlace()==0){//0左
-				left.put(mc.getName(), ops);
-				l = l+mps.size()+1;
+			if(type==0){
+				if(mc.getPlace()!=null&&mc.getPlace()==0){//0左
+					left.put(mc.getName(), ops);
+					l = l+mps.size()+1;
+				}else{
+					right.put(mc.getName(), ops);
+					r = r+mps.size()+1;
+				}
 			}else{
-				right.put(mc.getName(), ops);
-				r = r+mps.size()+1;
+				List<OrderProduct> leftup = new ArrayList<OrderProduct>();
+				List<OrderProduct> leftdown = new ArrayList<OrderProduct>();
+				for(OrderProduct opt : ops){
+					if(opt.getMaterialProduct().getPlace()==0){
+						leftup.add(opt);
+					}else{
+						leftdown.add(opt);
+					}
+				}
+				left.put("leftup", leftup);
+				right.put("leftdown", leftdown);
 			}
+			
 		}
 		//Map<String,Map<String,List<OrderProduct>>> returnMap = new HashMap<String,Map<String,List<OrderProduct>>>();
 		Map<String,Object> returnMap = new HashMap<String,Object>();

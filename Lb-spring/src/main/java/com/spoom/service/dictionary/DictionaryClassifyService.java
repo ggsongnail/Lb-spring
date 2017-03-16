@@ -40,4 +40,8 @@ public class DictionaryClassifyService {
 	public List<DictionaryClassify> findAllByDictionary(Dictionary dictionary){
 		return dictionaryClassifyDao.findAllByDictionary(dictionary);
 	}
+	
+	public List<DictionaryClassify> findByIdIn(int[] ids){
+		return dictionaryClassifyDao.findByIdIn(ids);
+	}
 }

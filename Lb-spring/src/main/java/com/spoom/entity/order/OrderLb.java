@@ -10,11 +10,12 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Lob;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import javax.persistence.Version;
 
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
-import org.springframework.format.annotation.DateTimeFormat;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
@@ -29,6 +30,7 @@ public class OrderLb {
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private int id;
 	private String orderNo;
+	private String contractNo;
 	private String orderTm;
 	private String sysNo;
 	private String customer;
@@ -43,9 +45,12 @@ public class OrderLb {
 	private Double deposit;
 	private Double budget;
 	private Double gross;
-	//@DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss") 
+	/*@DateTimeFormat(pattern="yyyy-MM-dd HH:mm") */
+	@Temporal(TemporalType.TIMESTAMP)
 	@JsonFormat(pattern="yyyy/MM/dd HH:mm",timezone = "GMT+8") 
 	private Date signingDate;
+	@JsonFormat(pattern="yyyy/MM/dd HH:mm",timezone = "GMT+8") 
+	private Date expectedDate;
 	private Date createDate;
 	private Date updateDate;
 	private Date deleteDate;
@@ -57,6 +62,18 @@ public class OrderLb {
 	
 	private Double mainPrice;
 	private Double assistPrice;
+	private Double latexPrice;
+	private Double artPrice;
+	private Double woodWaterPrice;
+	private Double artificialPrice;
+	
+	private Double mainPriceReal;
+	private Double assistPriceReal;
+	private Double latexPriceReal;
+	private Double artPriceReal;
+	private Double woodWaterPriceReal;
+	private Double artificialPriceReal;
+	
 	public int getId() {
 		return id;
 	}
@@ -68,6 +85,12 @@ public class OrderLb {
 	}
 	public void setOrderNo(String orderNo) {
 		this.orderNo = orderNo;
+	}
+	public String getContractNo() {
+		return contractNo;
+	}
+	public void setContractNo(String contractNo) {
+		this.contractNo = contractNo;
 	}
 	public String getOrderTm() {
 		return orderTm;
@@ -153,12 +176,17 @@ public class OrderLb {
 	public void setGross(Double gross) {
 		this.gross = gross;
 	}
-	
 	public Date getSigningDate() {
 		return signingDate;
 	}
 	public void setSigningDate(Date signingDate) {
 		this.signingDate = signingDate;
+	}
+	public Date getExpectedDate() {
+		return expectedDate;
+	}
+	public void setExpectedDate(Date expectedDate) {
+		this.expectedDate = expectedDate;
 	}
 	public Date getCreateDate() {
 		return createDate;
@@ -207,5 +235,65 @@ public class OrderLb {
 	}
 	public void setAssistPrice(Double assistPrice) {
 		this.assistPrice = assistPrice;
+	}
+	public Double getLatexPrice() {
+		return latexPrice;
+	}
+	public void setLatexPrice(Double latexPrice) {
+		this.latexPrice = latexPrice;
+	}
+	public Double getArtPrice() {
+		return artPrice;
+	}
+	public void setArtPrice(Double artPrice) {
+		this.artPrice = artPrice;
+	}
+	public Double getWoodWaterPrice() {
+		return woodWaterPrice;
+	}
+	public void setWoodWaterPrice(Double woodWaterPrice) {
+		this.woodWaterPrice = woodWaterPrice;
+	}
+	public Double getMainPriceReal() {
+		return mainPriceReal;
+	}
+	public void setMainPriceReal(Double mainPriceReal) {
+		this.mainPriceReal = mainPriceReal;
+	}
+	public Double getAssistPriceReal() {
+		return assistPriceReal;
+	}
+	public void setAssistPriceReal(Double assistPriceReal) {
+		this.assistPriceReal = assistPriceReal;
+	}
+	public Double getLatexPriceReal() {
+		return latexPriceReal;
+	}
+	public void setLatexPriceReal(Double latexPriceReal) {
+		this.latexPriceReal = latexPriceReal;
+	}
+	public Double getArtPriceReal() {
+		return artPriceReal;
+	}
+	public void setArtPriceReal(Double artPriceReal) {
+		this.artPriceReal = artPriceReal;
+	}
+	public Double getWoodWaterPriceReal() {
+		return woodWaterPriceReal;
+	}
+	public void setWoodWaterPriceReal(Double woodWaterPriceReal) {
+		this.woodWaterPriceReal = woodWaterPriceReal;
+	}
+	public Double getArtificialPrice() {
+		return artificialPrice;
+	}
+	public void setArtificialPrice(Double artificialPrice) {
+		this.artificialPrice = artificialPrice;
+	}
+	public Double getArtificialPriceReal() {
+		return artificialPriceReal;
+	}
+	public void setArtificialPriceReal(Double artificialPriceReal) {
+		this.artificialPriceReal = artificialPriceReal;
 	}
 }

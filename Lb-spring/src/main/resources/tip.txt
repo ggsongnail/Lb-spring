@@ -1,89 +1,16 @@
-1.spring 事务配置：
-声明式事务配置，Spring IoC container's bean如果有@Transactional注解，则具有事务性
-默认proxy-target-class:false;mode:proxy
-<tx:annotation-driven transaction-manager="transactionManager" proxy-target-class="true" mode="aspectj" order="1"/>
-	
-	基于接口的代理时，事务的注解只在public类型下才能起效，其他修饰如果要起效可以采用AspectJ模式
-	When using proxies, you should apply the @Transactional annotation only to methods with public visibility. 
-	If you do annotate protected, private or package-visible methods with the @Transactional annotation, 
-	no error is raised, 
-	but the annotated method does not exhibit the configured transactional settings. 
-	Consider the use of AspectJ (see below) if you need to annotate non-public methods.
-	
-	You can place the @Transactional annotation before an interface definition,
- 	a method on an interface,
-	a class definition, or a public method on a class. 
+主要材料（材料费金额合计）系统　实收	　
+	乳胶漆合计 系统　实收
+	艺术漆合计　系统　实收
+	木漆及水性漆合计　系统　实收
+
+合同总金额：	
 	
 	
-	基于类的代理需要CGLIB类来实现，JDK默认是基于接口生成代理，注解不能通过接口的实现来继承。所以当你使用基于类的代理或者weaving-based aspect模式时，事务的
-	注解不能放在接口或者接口的方法上，要放到具体的类和方法上（proxy模式的话他是直接用接口的事务注解，所以@Transactional可以放到接口上）
-	You certainly can place the @Transactional annotation on an interface (or an interface method), 
-	but this works only as you would expect it to if you are using interface-based proxies. 
-	The fact that Java annotations are not inherited from interfaces means that 
-	if you are using class-based proxies ( proxy-target-class="true") or the weaving-based aspect ( mode="aspectj"), 
-	then the transaction settings are not recognized by the proxying and weaving infrastructure, 
-	and the object will not be wrapped in a transactional proxy, which would be decidedly bad.
 	
-	
-	The default mode "proxy" processes annotated beans to be proxied using Spring’s AOP framework (following proxy semantics, 
-	as discussed above, applying to method calls coming in through the proxy only).适用于通过代理来调用 的方法
-	The alternative mode "aspectj" instead weaves the affected classes with Spring’s AspectJ transaction aspect, 
-	modifying the target class byte code to apply to any kind of method call. 
-	AspectJ weaving requires spring-aspects.jar in the classpath as well as load-time weaving (or compile-time weaving) enabled
+order 
 
-事务的隔离级别     @version
+order_product 
 
-    SET FOREIGN_KEY_CHECKS=0;
-来禁用外键约束.
- 
-之后再用
-    SET FOREIGN_KEY_CHECKS=1;
-来启动外键约束.
+product
 
-test git
-
-
-User.java
-@OneToMany(cascade = {CascadeType.ALL},mappedBy = "user")
-private List<Killed> killeds;
-
-==save(user)的时候可以级联操作Killed的对象save
-
-Killed.java
-@ManyToOne
-@JoinColumn(name="user_id")
-private User user;
-
-==save(killed)的时候，user必须是已持久化的对象，否则报错：object references an unsaved transient instance
-     如果你在注解上加上CascadeType.ALL 持久化的对象user 在save killed时报错；MEGER是成功的，但new User报错；
-     
-     
-mvn install:install-file -DgroupId=net.sf.ehcache -DartifactId=ehcache -Dversion=2.10.3 -Dpackaging=jar -Dfile=E:\ehcache-2.10.3.jar
-
-
-前面是控制传播行为，后面是控制事务隔离级别的。那么这时哪怕数据库层面上是重复读，但是还是以这里为准，你会发现在同一个事务中两次查询的结果是不一样的。
-
-共享锁，排他锁
-脏读  不可重复读
-========================脏读=================================【Isolation.READ_COMMITTED】
-事务T1：读取a=0 			更新a=10
-		------->		------->    commit(ok) rollback(脏读  a!=10)    解决方案：更新处加排他锁
-事务T2：					读取a=10
-						------->
-========================不可重复读===========================【Isolation.REPEATABLE_READ】
-事务T1：读取a=0 							读取a=10
-		------->						------->                      解决方案：读操作加共享锁，此数据只能读，事务2等待T1释放，才能在更新处加上排他锁，保证了不会脏读以及不可重复读
-事务T2：					更新a=10
-						-------> commit
-		
-============================================================
-
-
-oneToMany =>>json化会有死循环  
-
-manyToOne =>>因为经常使用到它对应的对象不建议去json化
-
-综合考虑不加oneToMany这个字段，
-
-$scope.conf = {};for(var l in $scope.left) conf['a']=0;
-
+先find product ===通过productId和orderId找==>　order_product:单个产品的数量和合计金额（这个方案可以匹配所有产品）

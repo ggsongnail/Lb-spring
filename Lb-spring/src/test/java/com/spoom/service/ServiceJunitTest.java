@@ -1,5 +1,6 @@
 package com.spoom.service;
 
+import java.util.Date;
 import java.util.List;
 
 import org.junit.Test;
@@ -9,9 +10,10 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.spoom.entity.artificial.ArtificialFee;
 import com.spoom.entity.dictionary.Dictionary;
 import com.spoom.entity.dictionary.DictionaryClassify;
-import com.spoom.entity.material.MaterialClassify;
+import com.spoom.service.artificial.ArtificialFeeService;
 import com.spoom.service.dictionary.DictionaryClassifyService;
 import com.spoom.service.dictionary.DictionaryService;
 import com.spoom.service.material.MaterialClassifyService;
@@ -34,11 +36,24 @@ public class ServiceJunitTest {
 	private OrderLbService orderService;
 	@Autowired
 	private OrderProductService orderProductService;
+	@Autowired
+	private ArtificialFeeService artificialDetailService;
+	
 	
 	@Test
 	public void testInsert(){
-		MaterialClassify mc = materialClassifyService.findById(1);
-		System.out.println(mc.getMaterialProducts());
+		ArtificialFee af = new ArtificialFee();
+		DictionaryClassify dc = dictionaryClassifyService.findById(8);
+		af.setName("内墙");
+		af.setDictionaryClassify(dc);
+		af.setStyle("基础型");
+		af.setStandard("平方米");
+		af.setPrice(18.0);
+		af.setLowFee(1000.0);
+		af.setRemark("适用于墙体基层牢固,局部磕碰部位用腻子修补,干燥打磨后涂刷2遍乳胶漆");
+		af.setCreateDate(new Date());
+		af.setUpdateDate(new Date());
+		artificialDetailService.save(af);
 	}
 	
 	public void testUpdate(){
