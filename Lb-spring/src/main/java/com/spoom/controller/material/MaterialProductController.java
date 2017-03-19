@@ -80,8 +80,8 @@ public class MaterialProductController {
 	}
 	
 	@ResponseBody
-	@RequestMapping(value="listformainbill/json/{orderNo}/{type}",method = RequestMethod.GET)
-	public Map listformainbill(@PathVariable String orderNo,@PathVariable int type){//0:main 1:assist
+	@RequestMapping(value="listformainbill/json/{orderId}/{type}",method = RequestMethod.GET)
+	public Map listformainbill(@PathVariable int orderId,@PathVariable int type){//0:main 1:assist
 		List<MaterialClassify> materialClassifys = new ArrayList<MaterialClassify>();
 		if(type==0){
 			//在dictionary_classify 1乳胶漆类　5艺术漆类　6木漆/水性漆
@@ -96,7 +96,7 @@ public class MaterialProductController {
 		Map<String,List<OrderProduct>> right = new HashMap<String,List<OrderProduct>>();
 		int l = 0;
 		int r = 0;
-		OrderLb order = orderService.findByOrderNo(orderNo);
+		OrderLb order = orderService.findById(orderId);
 		for(MaterialClassify mc:materialClassifys){
 			List<MaterialProduct> mps = materialProductService.findByMaterialClassify(mc);
 			//将通过order 和 product查出相关order_product与之对应上

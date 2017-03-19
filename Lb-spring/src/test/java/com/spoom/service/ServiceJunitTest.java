@@ -1,6 +1,5 @@
 package com.spoom.service;
 
-import java.util.Date;
 import java.util.List;
 
 import org.junit.Test;
@@ -10,9 +9,10 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.spoom.entity.artificial.ArtificialFee;
+import com.spoom.entity.admin.AdminUser;
 import com.spoom.entity.dictionary.Dictionary;
 import com.spoom.entity.dictionary.DictionaryClassify;
+import com.spoom.service.admin.AdminUserService;
 import com.spoom.service.artificial.ArtificialFeeService;
 import com.spoom.service.dictionary.DictionaryClassifyService;
 import com.spoom.service.dictionary.DictionaryService;
@@ -38,22 +38,13 @@ public class ServiceJunitTest {
 	private OrderProductService orderProductService;
 	@Autowired
 	private ArtificialFeeService artificialDetailService;
-	
+	@Autowired
+	private AdminUserService adminUserService;
 	
 	@Test
 	public void testInsert(){
-		ArtificialFee af = new ArtificialFee();
-		DictionaryClassify dc = dictionaryClassifyService.findById(8);
-		af.setName("内墙");
-		af.setDictionaryClassify(dc);
-		af.setStyle("基础型");
-		af.setStandard("平方米");
-		af.setPrice(18.0);
-		af.setLowFee(1000.0);
-		af.setRemark("适用于墙体基层牢固,局部磕碰部位用腻子修补,干燥打磨后涂刷2遍乳胶漆");
-		af.setCreateDate(new Date());
-		af.setUpdateDate(new Date());
-		artificialDetailService.save(af);
+		AdminUser adminUser = adminUserService.findByNameAndPassword("admin", "123456");
+		System.out.println(adminUser.getName());
 	}
 	
 	public void testUpdate(){

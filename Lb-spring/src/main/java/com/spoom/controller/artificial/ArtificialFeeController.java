@@ -81,9 +81,9 @@ public class ArtificialFeeController {
 	}
 	
 	@ResponseBody
-	@RequestMapping(value="listforbill/json/{orderNo}",method = RequestMethod.GET)
-	public Map listformainbill(@PathVariable String orderNo){
-		OrderLb order = orderService.findByOrderNo(orderNo);
+	@RequestMapping(value="listforbill/json/{orderId}",method = RequestMethod.GET)
+	public Map listformainbill(@PathVariable int orderId){
+		OrderLb order = orderService.findById(orderId);
 		Dictionary dictionary = dictionaryService.findById(4);
 		List<DictionaryClassify> dictionaryClassifys = dictionaryClassifyService.findAllByDictionary(dictionary);
 		Map<String,Object> map = new HashMap<String,Object>();
