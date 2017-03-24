@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.spoom.entity.dictionary.DictionaryClassify;
 import com.spoom.entity.material.MaterialClassify;
 import com.spoom.entity.material.MaterialProduct;
 import com.spoom.entity.order.OrderLb;
@@ -108,7 +107,7 @@ public class MaterialProductController {
 					ghost.setOrderLb(order);
 					ghost.setMaterialProduct(mp);
 					ghost.setCount(0);
-					ghost.setTotal(0);
+					ghost.setTotal(0.0);
 					//mp.setOrderProduct(ghost);
 					ops.add(ghost);
 					continue;

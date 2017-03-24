@@ -34,9 +34,11 @@ public class OrderArtificialFee {
 	@ManyToOne
 	@JoinColumn(name="artificial_id")
 	private ArtificialFee artificialFee;
-	private Integer count;
-	private Double total;
-	private Double totalReal;
+	private Integer count;//数量
+	private Double total;//总额  = 数量 x 定义人工单价
+	private Double totalReal;//手动填写总额
+	private Integer difCount;//决算变更数量
+	private Double difTotal;//决算变更额度
 	private Date createDate;
 	private Date updateDate;
 	private Date deleteDate;
@@ -74,12 +76,23 @@ public class OrderArtificialFee {
 	public void setTotal(Double total) {
 		this.total = total;
 	}
-	
 	public Double getTotalReal() {
 		return totalReal;
 	}
 	public void setTotalReal(Double totalReal) {
 		this.totalReal = totalReal;
+	}
+	public Integer getdifCount() {
+		return difCount;
+	}
+	public void setdifCount(Integer difCount) {
+		this.difCount = difCount;
+	}
+	public Double getdifTotal() {
+		return difTotal;
+	}
+	public void setdifTotal(Double difTotal) {
+		this.difTotal = difTotal;
 	}
 	public Date getCreateDate() {
 		return createDate;

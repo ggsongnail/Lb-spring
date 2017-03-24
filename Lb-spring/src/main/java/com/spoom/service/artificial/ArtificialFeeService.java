@@ -2,12 +2,18 @@ package com.spoom.service.artificial;
 
 import java.util.List;
 
+import javax.persistence.EntityManager;
+
+import org.hibernate.SQLQuery;
+import org.hibernate.transform.Transformers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.spoom.entity.artificial.ArtificialFee;
 import com.spoom.entity.dictionary.DictionaryClassify;
+import com.spoom.entity.order.OrderArtificialFeeFinal;
+import com.spoom.entity.order.OrderProductFinal;
 import com.spoom.respository.artificial.ArtificialFeeDao;
 
 /**
@@ -20,6 +26,9 @@ import com.spoom.respository.artificial.ArtificialFeeDao;
 public class ArtificialFeeService {
 	@Autowired
 	private ArtificialFeeDao artificialFeeDao;
+	
+	@Autowired
+	private EntityManager em ;
 	
 	public List<ArtificialFee> findAll() {
 		return artificialFeeDao.findAll();
@@ -41,4 +50,14 @@ public class ArtificialFeeService {
 		return artificialFeeDao.findByDictionaryClassify(dictionaryClassify);
 	}
 	
+	//多表关联的查询一步到位只能用原生的速度快些
+	public List<OrderArtificialFeeFinal> getOrderArtificialFeeFinals(int orderId){
+		String sql = "select mp.id,mp.name,mp.standard,mp.price,op.count,op.total,op.total_real,op.dif_count,op.dif_total from artificial_fee mp left join order_artificial op on mp.id = op.artificial_id where op.order_id = ?1";
+		return (List<OrderArtificialFeeFinal>) em.createNativeQuery(sql).setParameter(1, orderId).unwrap(SQLQuery.class).setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP).list();  
+	}
+	//多表关联的查询一步到位只能用原生的速度快些
+	public List<OrderArtificialFeeFinal> getOrderArtificialFeeFinalsHis(int orderId){
+		String sql = "select mp.id,mp.name,mp.standard,mp.price,op.count,op.total,op.total_real,op.dif_count,op.dif_total from artificial_fee mp left join order_artificial op on mp.id = op.artificial_id where op.order_id = ?1 and op.dif_count is not null";
+		return (List<OrderArtificialFeeFinal>) em.createNativeQuery(sql).setParameter(1, orderId).unwrap(SQLQuery.class).setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP).list();  
+	}
 }

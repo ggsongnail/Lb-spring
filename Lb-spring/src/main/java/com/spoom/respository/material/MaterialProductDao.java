@@ -18,4 +18,5 @@ public interface MaterialProductDao extends JpaRepository<MaterialProduct, Integ
 	public List<MaterialProduct> findByMaterialClassify(MaterialClassify materialClassify);
 	
 	public List<MaterialProduct> findByMaterialClassifyDictionaryClassify(DictionaryClassify dictionaryClassify);
+	
 }

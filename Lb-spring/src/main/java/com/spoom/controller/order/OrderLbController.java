@@ -3,6 +3,7 @@ package com.spoom.controller.order;
 import java.sql.Date;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -19,10 +20,13 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.spoom.entity.order.OrderArtificialFeeFinal;
 import com.spoom.entity.order.OrderLb;
+import com.spoom.entity.order.OrderProductFinal;
+import com.spoom.service.artificial.ArtificialFeeService;
+import com.spoom.service.material.MaterialProductService;
 import com.spoom.service.order.OrderLbService;
 
 /**
@@ -35,6 +39,12 @@ import com.spoom.service.order.OrderLbService;
 public class OrderLbController {
 	@Autowired
 	private OrderLbService orderService;
+	
+	@Autowired
+	private MaterialProductService materialProductService;
+	
+	@Autowired
+	private ArtificialFeeService artificialFeeService;
 	
 	@RequestMapping(method = RequestMethod.GET)
 	public String list(){
@@ -104,4 +114,29 @@ public class OrderLbController {
 			}
 		};
 	}
+	
+	@ResponseBody
+	@RequestMapping(value="finalorder/json/{orderId}",method = RequestMethod.GET)
+	public Map finalorder(@PathVariable int orderId){
+		List<OrderProductFinal> orderProductFinals = materialProductService.getOrderProductFinals(orderId);
+		List<OrderArtificialFeeFinal> orderArtificialFeeFinal = artificialFeeService.getOrderArtificialFeeFinals(orderId);
+		List<OrderProductFinal> orderProductFinalsHis = materialProductService.getOrderProductFinalsHis(orderId);
+		List<OrderArtificialFeeFinal> orderArtificialFeeFinalHis = artificialFeeService.getOrderArtificialFeeFinalsHis(orderId);
+		OrderLb orderLb = orderService.findById(orderId);
+		Map<String,Object> map = new HashMap<String,Object>();
+		map.put("materials",orderProductFinals);
+		map.put("mans", orderArtificialFeeFinal);
+		map.put("materialsHis", orderProductFinalsHis);
+		map.put("mansHis", orderArtificialFeeFinalHis);
+		map.put("orderLb", orderLb);
+		return map;
+	}
+	
+	@ResponseBody
+	@RequestMapping(value="fianal/save",method = RequestMethod.POST)
+	public OrderLb saveFinalOrderDetail(@RequestBody Map<String,Object> map){
+		return null;
+	}
+	
+
 }

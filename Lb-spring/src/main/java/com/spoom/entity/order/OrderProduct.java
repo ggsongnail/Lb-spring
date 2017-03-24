@@ -35,12 +35,14 @@ public class OrderProduct {
 	@ManyToOne
 	@JoinColumn(name="product_id")
 	private MaterialProduct materialProduct;
-	private int count;
-	private double total;
+	private Integer count;//数量
+	private Double total;//总额  = 数量 x 定义材料单价
+	private Integer difCount;//决算变更数量
+	private Double difTotal;//决算变更总额
 	private Date createDate;
 	private Date updateDate;
 	private Date deleteDate;
-	private int status;
+	private Integer status;
 	@Version
 	private Integer version;
 	
@@ -62,17 +64,29 @@ public class OrderProduct {
 	public void setMaterialProduct(MaterialProduct materialProduct) {
 		this.materialProduct = materialProduct;
 	}
-	public int getCount() {
+	public Integer getCount() {
 		return count;
 	}
-	public void setCount(int count) {
+	public void setCount(Integer count) {
 		this.count = count;
 	}
-	public double getTotal() {
+	public Double getTotal() {
 		return total;
 	}
-	public void setTotal(double total) {
+	public void setTotal(Double total) {
 		this.total = total;
+	}
+	public Integer getDifCount() {
+		return difCount;
+	}
+	public void setDifCount(Integer DifCount) {
+		this.difCount = difCount;
+	}
+	public Double getDifTotal() {
+		return difTotal;
+	}
+	public void setDifTotal(Double DifTotal) {
+		this.difTotal = difTotal;
 	}
 	public Date getCreateDate() {
 		return createDate;

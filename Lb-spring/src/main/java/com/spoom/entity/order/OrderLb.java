@@ -44,7 +44,7 @@ public class OrderLb {
 	private String brushArea;
 	private Double deposit;
 	private Double budget;
-	private Double gross;
+	
 	/*@DateTimeFormat(pattern="yyyy-MM-dd HH:mm") */
 	@Temporal(TemporalType.TIMESTAMP)
 	@JsonFormat(pattern="yyyy/MM/dd HH:mm",timezone = "GMT+8") 
@@ -60,19 +60,30 @@ public class OrderLb {
 	@Version
 	private Integer version;
 	
-	private Double mainPrice;
-	private Double assistPrice;
+	private Double mainPrice;//主材费
 	private Double latexPrice;
 	private Double artPrice;
 	private Double woodWaterPrice;
 	private Double artificialPrice;
 	
-	private Double mainPriceReal;
-	private Double assistPriceReal;
+	private Double mainPriceReal;//主材预算费
 	private Double latexPriceReal;
 	private Double artPriceReal;
 	private Double woodWaterPriceReal;
-	private Double artificialPriceReal;
+	
+	private Double assistPrice;
+	private Double assistPriceReal;//辅材预算费
+	
+	private Double artificialPriceReal;//人工预算费
+	
+	private Double difManTotal;
+	private Double difMaterialTotal;
+	private Double grossMan;
+	private Double grossManFinal;
+	private Double grossMaterial;
+	private Double grossMaterialFinal;
+	private Double gross;
+	private Double grossFinal;
 	
 	public int getId() {
 		return id;
@@ -295,5 +306,47 @@ public class OrderLb {
 	}
 	public void setArtificialPriceReal(Double artificialPriceReal) {
 		this.artificialPriceReal = artificialPriceReal;
+	}
+	public Double getDifManTotal() {
+		return difManTotal;
+	}
+	public void setDifManTotal(Double difManTotal) {
+		this.difManTotal = difManTotal;
+	}
+	public Double getDifMaterialTotal() {
+		return difMaterialTotal;
+	}
+	public void setDifMaterialTotal(Double difMaterialTotal) {
+		this.difMaterialTotal = difMaterialTotal;
+	}
+	public Double getGrossMan() {
+		return grossMan;
+	}
+	public void setGrossMan(Double grossMan) {
+		this.grossMan = grossMan;
+	}
+	public Double getGrossManFinal() {
+		return grossManFinal;
+	}
+	public void setGrossManFinal(Double grossManFinal) {
+		this.grossManFinal = grossManFinal;
+	}
+	public Double getGrossMaterial() {
+		return grossMaterial;
+	}
+	public void setGrossMaterial(Double grossMaterial) {
+		this.grossMaterial = grossMaterial;
+	}
+	public Double getGrossMaterialFinal() {
+		return grossMaterialFinal;
+	}
+	public void setGrossMaterialFinal(Double grossMaterialFinal) {
+		this.grossMaterialFinal = grossMaterialFinal;
+	}
+	public Double getGrossFinal() {
+		return grossFinal;
+	}
+	public void setGrossFinal(Double grossFinal) {
+		this.grossFinal = grossFinal;
 	}
 }

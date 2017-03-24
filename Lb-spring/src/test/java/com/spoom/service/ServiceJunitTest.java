@@ -9,7 +9,6 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.spoom.entity.admin.AdminUser;
 import com.spoom.entity.dictionary.Dictionary;
 import com.spoom.entity.dictionary.DictionaryClassify;
 import com.spoom.service.admin.AdminUserService;
@@ -43,8 +42,6 @@ public class ServiceJunitTest {
 	
 	@Test
 	public void testInsert(){
-		AdminUser adminUser = adminUserService.findByNameAndPassword("admin", "123456");
-		System.out.println(adminUser.getName());
 	}
 	
 	public void testUpdate(){
