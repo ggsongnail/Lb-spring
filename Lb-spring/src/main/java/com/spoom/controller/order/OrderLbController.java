@@ -22,12 +22,18 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.spoom.entity.artificial.ArtificialFee;
+import com.spoom.entity.material.MaterialProduct;
+import com.spoom.entity.order.OrderArtificialFee;
 import com.spoom.entity.order.OrderArtificialFeeFinal;
 import com.spoom.entity.order.OrderLb;
+import com.spoom.entity.order.OrderProduct;
 import com.spoom.entity.order.OrderProductFinal;
 import com.spoom.service.artificial.ArtificialFeeService;
 import com.spoom.service.material.MaterialProductService;
+import com.spoom.service.order.OrderArtificialFeeService;
 import com.spoom.service.order.OrderLbService;
+import com.spoom.service.order.OrderProductService;
 
 /**
  * 
@@ -45,6 +51,12 @@ public class OrderLbController {
 	
 	@Autowired
 	private ArtificialFeeService artificialFeeService;
+	
+	@Autowired
+	private OrderProductService orderProductService;
+	
+	@Autowired
+	private OrderArtificialFeeService orderArtificialFeeService;
 	
 	@RequestMapping(method = RequestMethod.GET)
 	public String list(){
@@ -133,8 +145,52 @@ public class OrderLbController {
 	}
 	
 	@ResponseBody
-	@RequestMapping(value="fianal/save",method = RequestMethod.POST)
-	public OrderLb saveFinalOrderDetail(@RequestBody Map<String,Object> map){
+	@RequestMapping(value="final/material/save",method = RequestMethod.POST)
+	public OrderLb saveFinalMaterial(@RequestBody List<OrderProductFinal> ops){
+		for(OrderProductFinal op:ops){
+			if(op.getDifCount()!=0){
+				OrderProduct orderProduct  = orderProductService.findById(op.getoId());
+				if(orderProduct!=null){
+					orderProduct.setDifCount(op.getDifCount());
+					orderProduct.setDifTotal(op.getDifTotal());
+					orderProductService.save(orderProduct);
+				}else{
+					OrderProduct ghost = new OrderProduct();
+					OrderLb orderLb = orderService.findById(op.getOrderId());
+					MaterialProduct materialProduct = materialProductService.findById(op.getmId());
+					//ghost.setOrderLb(orderLb);
+					//ghost.setMaterialProduct(materialProduct);
+					ghost.setDifCount(op.getDifCount());
+					ghost.setDifTotal(op.getDifTotal());
+					orderProductService.save(ghost);
+				}
+			}
+		}
+		return null;
+	}
+	
+	@ResponseBody
+	@RequestMapping(value="final/man/save",method = RequestMethod.POST)
+	public OrderLb saveFinalMan(@RequestBody List<OrderArtificialFeeFinal> ops){
+		for(OrderArtificialFeeFinal op:ops){
+			if(op.getDifCount()!=0){
+				OrderArtificialFee orderArtificialFee  = orderArtificialFeeService.findById(op.getoId());
+				if(orderArtificialFee!=null){
+					orderArtificialFee.setDifCount(op.getDifCount());
+					orderArtificialFee.setDifTotal(op.getDifTotal());
+					orderArtificialFeeService.save(orderArtificialFee);
+				}else{
+					OrderArtificialFee ghost = new OrderArtificialFee();
+					OrderLb orderLb = orderService.findById(op.getOrderId());
+					ArtificialFee artificialFee = artificialFeeService.findById(op.getmId());
+					ghost.setOrderLb(orderLb);
+					ghost.setArtificialFee(artificialFee);
+					ghost.setDifCount(op.getDifCount());
+					ghost.setDifTotal(op.getDifTotal());
+					orderArtificialFeeService.save(ghost);
+				}
+			}
+		}
 		return null;
 	}
 	

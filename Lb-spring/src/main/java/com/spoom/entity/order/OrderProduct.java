@@ -1,5 +1,6 @@
 package com.spoom.entity.order;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
 import javax.persistence.Cacheable;
@@ -29,12 +30,20 @@ public class OrderProduct {
 	@Column(name="id")
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private int id;
-	@ManyToOne
+	/*@ManyToOne
 	@JoinColumn(name="order_id")
-	private OrderLb orderLb;
-	@ManyToOne
+	private OrderLb orderLb;*/
+	/*@ManyToOne
 	@JoinColumn(name="product_id")
-	private MaterialProduct materialProduct;
+	private MaterialProduct materialProduct;*/
+	private Integer orderId;
+	private Integer productId;
+	private String materialClassifyName;
+    private String productName;
+    private String standard;
+    private BigDecimal price;
+    private Integer place;
+    private Integer dictionaryClassifyId;
 	private Integer count;//数量
 	private Double total;//总额  = 数量 x 定义材料单价
 	private Integer difCount;//决算变更数量
@@ -52,17 +61,54 @@ public class OrderProduct {
 	public void setId(int id) {
 		this.id = id;
 	}
-	public OrderLb getOrderLb() {
-		return orderLb;
+	
+	public Integer getOrderId() {
+		return orderId;
 	}
-	public void setOrderLb(OrderLb orderLb) {
-		this.orderLb = orderLb;
+	public void setOrderId(Integer orderId) {
+		this.orderId = orderId;
 	}
-	public MaterialProduct getMaterialProduct() {
-		return materialProduct;
+	public Integer getProductId() {
+		return productId;
 	}
-	public void setMaterialProduct(MaterialProduct materialProduct) {
-		this.materialProduct = materialProduct;
+	public void setProductId(Integer productId) {
+		this.productId = productId;
+	}
+	public String getMaterialClassifyName() {
+		return materialClassifyName;
+	}
+	public void setMaterialClassifyName(String materialClassifyName) {
+		this.materialClassifyName = materialClassifyName;
+	}
+	public String getProductName() {
+		return productName;
+	}
+	public void setProductName(String productName) {
+		this.productName = productName;
+	}
+	public String getStandard() {
+		return standard;
+	}
+	public void setStandard(String standard) {
+		this.standard = standard;
+	}
+	public BigDecimal getPrice() {
+		return price;
+	}
+	public void setPrice(BigDecimal price) {
+		this.price = price;
+	}
+	public Integer getPlace() {
+		return place;
+	}
+	public void setPlace(Integer place) {
+		this.place = place;
+	}
+	public Integer getDictionaryClassifyId() {
+		return dictionaryClassifyId;
+	}
+	public void setDictionaryClassifyId(Integer dictionaryClassifyId) {
+		this.dictionaryClassifyId = dictionaryClassifyId;
 	}
 	public Integer getCount() {
 		return count;
@@ -79,13 +125,13 @@ public class OrderProduct {
 	public Integer getDifCount() {
 		return difCount;
 	}
-	public void setDifCount(Integer DifCount) {
+	public void setDifCount(Integer difCount) {
 		this.difCount = difCount;
 	}
 	public Double getDifTotal() {
 		return difTotal;
 	}
-	public void setDifTotal(Double DifTotal) {
+	public void setDifTotal(Double difTotal) {
 		this.difTotal = difTotal;
 	}
 	public Date getCreateDate() {
@@ -106,10 +152,10 @@ public class OrderProduct {
 	public void setDeleteDate(Date deleteDate) {
 		this.deleteDate = deleteDate;
 	}
-	public int getStatus() {
+	public Integer getStatus() {
 		return status;
 	}
-	public void setStatus(int status) {
+	public void setStatus(Integer status) {
 		this.status = status;
 	}
 	public Integer getVersion() {

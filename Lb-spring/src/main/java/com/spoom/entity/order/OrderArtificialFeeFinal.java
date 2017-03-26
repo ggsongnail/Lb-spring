@@ -3,8 +3,11 @@ package com.spoom.entity.order;
 import java.io.Serializable;
 
 public class OrderArtificialFeeFinal implements Serializable {
-	private int id;
+	private int mId;
+	private int oId;
+	private int orderId;
 	private String name;
+	private String style;
 	private String standard;
 	private Double price;
 	private Integer count;
@@ -12,17 +15,37 @@ public class OrderArtificialFeeFinal implements Serializable {
 	private Double totalReal;//人工费单独需要此参数
 	private Integer difCount;
 	private Double difTotal;
-	public int getId() {
-		return id;
+	
+	public int getmId() {
+		return mId;
 	}
-	public void setId(int id) {
-		this.id = id;
+	public void setmId(int mId) {
+		this.mId = mId;
+	}
+	public int getoId() {
+		return oId;
+	}
+	public void setoId(int oId) {
+		this.oId = oId;
+	}
+	public int getOrderId() {
+		return orderId;
+	}
+	public void setOrderId(int orderId) {
+		this.orderId = orderId;
 	}
 	public String getName() {
 		return name;
 	}
 	public void setName(String name) {
 		this.name = name;
+	}
+	
+	public String getStyle() {
+		return style;
+	}
+	public void setStyle(String style) {
+		this.style = style;
 	}
 	public String getStandard() {
 		return standard;

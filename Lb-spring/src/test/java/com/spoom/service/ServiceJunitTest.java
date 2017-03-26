@@ -1,5 +1,6 @@
 package com.spoom.service;
 
+import java.util.HashSet;
 import java.util.List;
 
 import org.junit.Test;
@@ -11,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.spoom.entity.dictionary.Dictionary;
 import com.spoom.entity.dictionary.DictionaryClassify;
+import com.spoom.entity.material.dto.MaterialProductDto;
 import com.spoom.service.admin.AdminUserService;
 import com.spoom.service.artificial.ArtificialFeeService;
 import com.spoom.service.dictionary.DictionaryClassifyService;
@@ -42,6 +44,14 @@ public class ServiceJunitTest {
 	
 	@Test
 	public void testInsert(){
+		 HashSet<Integer> set = new HashSet<Integer>();
+		 set.add(1);
+		 set.add(5);
+		 set.add(6);
+		List<MaterialProductDto> opf = materialProductService.getMaterialProductDtos(5,set);
+		for(MaterialProductDto op:opf){
+			System.out.println(op.getProductName());
+		}
 	}
 	
 	public void testUpdate(){

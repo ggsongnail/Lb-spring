@@ -52,12 +52,12 @@ public class ArtificialFeeService {
 	
 	//多表关联的查询一步到位只能用原生的速度快些
 	public List<OrderArtificialFeeFinal> getOrderArtificialFeeFinals(int orderId){
-		String sql = "select mp.id,mp.name,mp.standard,mp.price,op.count,op.total,op.total_real,op.dif_count,op.dif_total from artificial_fee mp left join order_artificial op on mp.id = op.artificial_id where op.order_id = ?1";
+		String sql = "select mp.id mId,op.id oId,op.order_id orderId,mp.name,mp.style,mp.standard,mp.price,op.count,op.total,op.total_real totalReal,op.dif_count difCount,op.dif_total difTotal from artificial_fee mp left join order_artificial op on mp.id = op.artificial_id where op.order_id = ?1";
 		return (List<OrderArtificialFeeFinal>) em.createNativeQuery(sql).setParameter(1, orderId).unwrap(SQLQuery.class).setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP).list();  
 	}
 	//多表关联的查询一步到位只能用原生的速度快些
 	public List<OrderArtificialFeeFinal> getOrderArtificialFeeFinalsHis(int orderId){
-		String sql = "select mp.id,mp.name,mp.standard,mp.price,op.count,op.total,op.total_real,op.dif_count,op.dif_total from artificial_fee mp left join order_artificial op on mp.id = op.artificial_id where op.order_id = ?1 and op.dif_count is not null";
+		String sql = "select mp.id mId,op.id oId,op.order_id orderId,mp.name,mp.style,mp.standard,mp.price,op.count,op.total,op.total_real totalReal,op.dif_count difCount,op.dif_total difTotal from artificial_fee mp left join order_artificial op on mp.id = op.artificial_id where op.order_id = ?1 and op.dif_count <> 0";
 		return (List<OrderArtificialFeeFinal>) em.createNativeQuery(sql).setParameter(1, orderId).unwrap(SQLQuery.class).setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP).list();  
 	}
 }

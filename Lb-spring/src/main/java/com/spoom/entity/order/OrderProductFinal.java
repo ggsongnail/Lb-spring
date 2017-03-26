@@ -3,20 +3,37 @@ package com.spoom.entity.order;
 import java.io.Serializable;
 
 public class OrderProductFinal implements Serializable {
-	private int id;
+	private int mId;
+	private int oId;
+	private int orderId;
 	private String name;
 	private String standard;
 	private Double price;
 	private Integer count;
 	private Double total;
 	private Integer difCount;
+	public int getmId() {
+		return mId;
+	}
+	public void setmId(int mId) {
+		this.mId = mId;
+	}
+	public int getoId() {
+		return oId;
+	}
+	public void setoId(int oId) {
+		this.oId = oId;
+	}
+	
+	public int getOrderId() {
+		return orderId;
+	}
+	public void setOrderId(int orderId) {
+		this.orderId = orderId;
+	}
+
 	private Double difTotal;
-	public int getId() {
-		return id;
-	}
-	public void setId(int id) {
-		this.id = id;
-	}
+	
 	public String getName() {
 		return name;
 	}

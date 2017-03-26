@@ -82,16 +82,16 @@ public class OrderArtificialFee {
 	public void setTotalReal(Double totalReal) {
 		this.totalReal = totalReal;
 	}
-	public Integer getdifCount() {
+	public Integer getDifCount() {
 		return difCount;
 	}
-	public void setdifCount(Integer difCount) {
+	public void setDifCount(Integer difCount) {
 		this.difCount = difCount;
 	}
-	public Double getdifTotal() {
+	public Double getDifTotal() {
 		return difTotal;
 	}
-	public void setdifTotal(Double difTotal) {
+	public void setDifTotal(Double difTotal) {
 		this.difTotal = difTotal;
 	}
 	public Date getCreateDate() {
