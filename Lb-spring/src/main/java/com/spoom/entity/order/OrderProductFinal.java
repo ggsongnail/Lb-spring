@@ -3,8 +3,8 @@ package com.spoom.entity.order;
 import java.io.Serializable;
 
 public class OrderProductFinal implements Serializable {
-	private int mId;
-	private int oId;
+	private int mId;//materialProductId
+	private int oId;//orderProductId
 	private int orderId;
 	private String name;
 	private String standard;

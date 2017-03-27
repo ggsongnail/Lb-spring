@@ -58,7 +58,8 @@ public class OrderProductController {
 	
 	@ResponseBody
 	@RequestMapping(value="bill/save",method = RequestMethod.POST)
-	public OrderProduct saveOrderProductFromBill(@RequestBody List<OrderProduct> materialProductDtos){
+	public OrderProduct saveOrderProductFromBill(@RequestBody List<OrderProduct> orderProductDtos){
+		orderProductService.batchUpdate(orderProductDtos);
 		return new OrderProduct();
 	}
 	

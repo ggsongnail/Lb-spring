@@ -1,20 +1,21 @@
 package com.spoom.entity.order;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 
 public class OrderArtificialFeeFinal implements Serializable {
-	private int mId;
-	private int oId;
+	private int mId;//artificialId
+	private int oId;//orderArtificialId
 	private int orderId;
 	private String name;
 	private String style;
 	private String standard;
-	private Double price;
+	private BigDecimal price;
 	private Integer count;
-	private Double total;
-	private Double totalReal;//人工费单独需要此参数
+	private BigDecimal total;
+	private BigDecimal totalReal;//人工费单独需要此参数
 	private Integer difCount;
-	private Double difTotal;
+	private BigDecimal difTotal;
 	
 	public int getmId() {
 		return mId;
@@ -40,7 +41,6 @@ public class OrderArtificialFeeFinal implements Serializable {
 	public void setName(String name) {
 		this.name = name;
 	}
-	
 	public String getStyle() {
 		return style;
 	}
@@ -53,28 +53,28 @@ public class OrderArtificialFeeFinal implements Serializable {
 	public void setStandard(String standard) {
 		this.standard = standard;
 	}
-	public Double getPrice() {
-		return price;
-	}
-	public void setPrice(Double price) {
-		this.price = price;
-	}
 	public Integer getCount() {
 		return count;
 	}
 	public void setCount(Integer count) {
 		this.count = count;
 	}
-	public Double getTotal() {
+	public BigDecimal getPrice() {
+		return price;
+	}
+	public void setPrice(BigDecimal price) {
+		this.price = price;
+	}
+	public BigDecimal getTotal() {
 		return total;
 	}
-	public void setTotal(Double total) {
+	public void setTotal(BigDecimal total) {
 		this.total = total;
 	}
-	public Double getTotalReal() {
+	public BigDecimal getTotalReal() {
 		return totalReal;
 	}
-	public void setTotalReal(Double totalReal) {
+	public void setTotalReal(BigDecimal totalReal) {
 		this.totalReal = totalReal;
 	}
 	public Integer getDifCount() {
@@ -83,10 +83,10 @@ public class OrderArtificialFeeFinal implements Serializable {
 	public void setDifCount(Integer difCount) {
 		this.difCount = difCount;
 	}
-	public Double getDifTotal() {
+	public BigDecimal getDifTotal() {
 		return difTotal;
 	}
-	public void setDifTotal(Double difTotal) {
+	public void setDifTotal(BigDecimal difTotal) {
 		this.difTotal = difTotal;
 	}
 }

@@ -4,87 +4,95 @@ import java.math.BigDecimal;
 import java.util.Date;
 
 import javax.persistence.Cacheable;
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Version;
 
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
-import com.spoom.entity.material.MaterialProduct;
-
 @Entity
-@Table(name="order_product")
+@Table(name="order_artificial")
 @DynamicInsert(true)
 @DynamicUpdate(true)
 @Cacheable
-public class OrderProduct {
+public class OrderArtificial {
 	@Id
 	@Column(name="id")
 	@GeneratedValue(strategy = GenerationType.AUTO)
-	private Integer id;//原生sql查询的如果是int　查出是null　fastxml转会报错，因为null==0本身就是有类型错误的。
+	private Integer id;
 	/*@ManyToOne
 	@JoinColumn(name="order_id")
-	private OrderLb orderLb;*/
-	/*@ManyToOne
-	@JoinColumn(name="product_id")
-	private MaterialProduct materialProduct;*/
+	private OrderLb orderLb;
+	@ManyToOne
+	@JoinColumn(name="artificial_id")
+	private ArtificialFee artificialFee;*/
 	private Integer orderId;
-	private Integer productId;
-	private String materialClassifyName;
-    private String productName;
-    private String standard;
-    private BigDecimal price;
-    private Integer place;
-    private Integer dictionaryClassifyId;
+	private Integer artificialFeeId;
+	private Integer dictionaryClassifyId;
+	private String dictionaryClassifyName;
+	private String name;
+	private String style;
+	private String standard;
+	private BigDecimal price;
+	private BigDecimal lowFee;
+	private String remark;
 	private Integer count;//数量
-	private Double total;//总额  = 数量 x 定义材料单价
+	private BigDecimal total;//总额  = 数量 x 定义人工单价
+	private BigDecimal totalReal;//手动填写总额
 	private Integer difCount;//决算变更数量
-	private Double difTotal;//决算变更总额
+	private BigDecimal difTotal;//决算变更额度
 	private Date createDate;
 	private Date updateDate;
 	private Date deleteDate;
 	private Integer status;
 	@Version
 	private Integer version;
-	
 	public Integer getId() {
 		return id;
 	}
 	public void setId(Integer id) {
 		this.id = id;
 	}
-	
 	public Integer getOrderId() {
 		return orderId;
 	}
 	public void setOrderId(Integer orderId) {
 		this.orderId = orderId;
 	}
-	public Integer getProductId() {
-		return productId;
+	public Integer getArtificialFeeId() {
+		return artificialFeeId;
 	}
-	public void setProductId(Integer productId) {
-		this.productId = productId;
+	public void setArtificialFeeId(Integer artificialFeeId) {
+		this.artificialFeeId = artificialFeeId;
 	}
-	public String getMaterialClassifyName() {
-		return materialClassifyName;
+	public Integer getDictionaryClassifyId() {
+		return dictionaryClassifyId;
 	}
-	public void setMaterialClassifyName(String materialClassifyName) {
-		this.materialClassifyName = materialClassifyName;
+	public void setDictionaryClassifyId(Integer dictionaryClassifyId) {
+		this.dictionaryClassifyId = dictionaryClassifyId;
 	}
-	public String getProductName() {
-		return productName;
+	public String getDictionaryClassifyName() {
+		return dictionaryClassifyName;
 	}
-	public void setProductName(String productName) {
-		this.productName = productName;
+	public void setDictionaryClassifyName(String dictionaryClassifyName) {
+		this.dictionaryClassifyName = dictionaryClassifyName;
+	}
+	public String getName() {
+		return name;
+	}
+	public void setName(String name) {
+		this.name = name;
+	}
+	public String getStyle() {
+		return style;
+	}
+	public void setStyle(String style) {
+		this.style = style;
 	}
 	public String getStandard() {
 		return standard;
@@ -98,17 +106,17 @@ public class OrderProduct {
 	public void setPrice(BigDecimal price) {
 		this.price = price;
 	}
-	public Integer getPlace() {
-		return place;
+	public BigDecimal getLowFee() {
+		return lowFee;
 	}
-	public void setPlace(Integer place) {
-		this.place = place;
+	public void setLowFee(BigDecimal lowFee) {
+		this.lowFee = lowFee;
 	}
-	public Integer getDictionaryClassifyId() {
-		return dictionaryClassifyId;
+	public String getRemark() {
+		return remark;
 	}
-	public void setDictionaryClassifyId(Integer dictionaryClassifyId) {
-		this.dictionaryClassifyId = dictionaryClassifyId;
+	public void setRemark(String remark) {
+		this.remark = remark;
 	}
 	public Integer getCount() {
 		return count;
@@ -116,22 +124,28 @@ public class OrderProduct {
 	public void setCount(Integer count) {
 		this.count = count;
 	}
-	public Double getTotal() {
-		return total;
-	}
-	public void setTotal(Double total) {
-		this.total = total;
-	}
 	public Integer getDifCount() {
 		return difCount;
 	}
 	public void setDifCount(Integer difCount) {
 		this.difCount = difCount;
 	}
-	public Double getDifTotal() {
+	public BigDecimal getTotal() {
+		return total;
+	}
+	public void setTotal(BigDecimal total) {
+		this.total = total;
+	}
+	public BigDecimal getTotalReal() {
+		return totalReal;
+	}
+	public void setTotalReal(BigDecimal totalReal) {
+		this.totalReal = totalReal;
+	}
+	public BigDecimal getDifTotal() {
 		return difTotal;
 	}
-	public void setDifTotal(Double difTotal) {
+	public void setDifTotal(BigDecimal difTotal) {
 		this.difTotal = difTotal;
 	}
 	public Date getCreateDate() {

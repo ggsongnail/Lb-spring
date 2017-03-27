@@ -71,22 +71,29 @@ public class MaterialProductService {
 		return (List<OrderProductFinal>) em.createNativeQuery(sql).setParameter(1, orderId).unwrap(SQLQuery.class).setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP).list();  
 	}
 	
+	//原生sql查询材料表在订单的状况，for主材和辅材收费表用
 	public List<OrderProduct> getOrderProductDtos(int orderId,Set ids){
 		
-		String sql = "select mp.id productId, "+
+		String sql = "select opp.id,mp.id productId, "+
 			       "mc.name materialClassifyName, "+
 			       "mp.name productName, "+
 			       "mp.standard, "+
 			       "mp.price, "+
 			       "opp.order_id orderId, "+
 			       "opp.count, "+
-			       "mc.place, dc.id dictionaryClassifyId from material_product mp left join "+ 
-			"(SELECT op.order_id,op.product_id pid,op.count,op.total FROM order_product op WHERE order_id = ?1) opp on mp.id = opp.pid "+
+			       "mc.place, dc.id dictionaryClassifyId,opp.version from material_product mp left join "+ 
+			"(SELECT op.id,op.order_id,op.product_id pid,op.count,op.total,op.version FROM order_product op WHERE order_id = ?1) opp on mp.id = opp.pid "+
 			"LEFT JOIN material_classify mc on mc.id = mp.material_classify_id "+
 			"LEFT JOIN dictionary_classify dc on mc.dictionary_classify_id = dc.id "+
 			"where mc.dictionary_classify_id in (?2) "+
 			"order by mp.id";  
 		return (List<OrderProduct>) em.createNativeQuery(sql).setParameter(1, orderId).setParameter(2, ids).unwrap(SQLQuery.class).setResultTransformer(Transformers.aliasToBean(OrderProduct.class)).list();  
 		
+	}
+	
+	public List getMaterialProducts(){
+		String sql = "SELECT concat_ws('/', name, standard, price) as combo FROM `lbsys`.`material_product` WHERE  `material_classify_id` <>8";
+		List strs =  em.createNativeQuery(sql).getResultList();
+		return strs;
 	}
 }

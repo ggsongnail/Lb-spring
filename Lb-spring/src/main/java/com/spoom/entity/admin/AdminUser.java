@@ -20,7 +20,7 @@ import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
 import com.spoom.entity.dictionary.DictionaryClassify;
-import com.spoom.entity.order.OrderArtificialFee;
+import com.spoom.entity.order.OrderArtificial;
 import com.spoom.entity.order.OrderProduct;
 
 @Entity

@@ -3,8 +3,10 @@ package com.spoom.controller.artificial;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -17,7 +19,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.spoom.entity.artificial.ArtificialFee;
 import com.spoom.entity.dictionary.Dictionary;
 import com.spoom.entity.dictionary.DictionaryClassify;
-import com.spoom.entity.order.OrderArtificialFee;
+import com.spoom.entity.order.OrderArtificial;
 import com.spoom.entity.order.OrderLb;
 import com.spoom.service.artificial.ArtificialFeeService;
 import com.spoom.service.dictionary.DictionaryClassifyService;
@@ -84,30 +86,23 @@ public class ArtificialFeeController {
 	@RequestMapping(value="listforbill/json/{orderId}",method = RequestMethod.GET)
 	public Map listformainbill(@PathVariable int orderId){
 		OrderLb order = orderService.findById(orderId);
-		Dictionary dictionary = dictionaryService.findById(4);
-		List<DictionaryClassify> dictionaryClassifys = dictionaryClassifyService.findAllByDictionary(dictionary);
 		Map<String,Object> map = new HashMap<String,Object>();
-		for(DictionaryClassify dc : dictionaryClassifys){
-			List<ArtificialFee> afs = artificialFeeService.findByDictionaryClassify(dc);
-			List<OrderArtificialFee> oafs = new ArrayList<OrderArtificialFee>();
-			for(ArtificialFee af : afs){
-				OrderArtificialFee oaf = orderArtificialFeeService.findByOrderLbAndOrderArtificialFee(order, af);
-				if(oaf==null){
-					OrderArtificialFee ghost = new OrderArtificialFee();
-					ghost.setOrderLb(order);
-					ghost.setArtificialFee(af);
-					ghost.setCount(0);
-					ghost.setTotal(0.0);
-					ghost.setTotalReal(0.0);
-					
-					oafs.add(ghost);
-				}else{
-					oafs.add(oaf);
-				}
+		Map<String,List<OrderArtificial>> artiMap = new HashMap<String,List<OrderArtificial>>();
+		Set<Integer> ids = new HashSet<Integer>();
+		List<OrderArtificial> orderArtificials = artificialFeeService.getOrderArtificalDtos(orderId);
+		
+		for(OrderArtificial oa:orderArtificials){
+			String key = returnFlag(oa.getDictionaryClassifyId());
+			if(artiMap.containsKey(key)){
+				artiMap.get(key).add(oa);
+			}else{
+				List<OrderArtificial> oaList = new ArrayList<OrderArtificial>();
+				oaList.add(oa);
+				artiMap.put(key, oaList);
 			}
-			map.put(returnFlag(dc.getId()), oafs);
 		}
 		map.put("orderLb", order);
+		map.put("artiMap", artiMap);
 		return map;
 	}
 	

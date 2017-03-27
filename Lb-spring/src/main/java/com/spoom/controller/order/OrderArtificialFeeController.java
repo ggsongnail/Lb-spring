@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.spoom.entity.order.OrderArtificialFee;
+import com.spoom.entity.order.OrderArtificial;
 import com.spoom.service.order.OrderArtificialFeeService;
 import com.spoom.service.order.OrderLbService;
 
@@ -34,33 +34,30 @@ public class OrderArtificialFeeController {
 	
 	@ResponseBody
 	@RequestMapping(value="get/{id}",method = RequestMethod.GET)
-	public OrderArtificialFee getOrderArtificial(@PathVariable int id){
-		OrderArtificialFee orderArtificialFee = orderArtificialFeeService.findById(id);
+	public OrderArtificial getOrderArtificial(@PathVariable int id){
+		OrderArtificial orderArtificialFee = orderArtificialFeeService.findById(id);
 		return orderArtificialFee;
 	}
 	
 	@ResponseBody
 	@RequestMapping(value="save",method = RequestMethod.POST)
-	public OrderArtificialFee saveOrderArtificial(@RequestBody OrderArtificialFee OrderArtificial){
+	public OrderArtificial saveOrderArtificial(@RequestBody OrderArtificial OrderArtificial){
 		orderArtificialFeeService.save(OrderArtificial);
 		return OrderArtificial;
 	}
 	
 	@ResponseBody
 	@RequestMapping(value="list/json",method = RequestMethod.GET)
-	public List<OrderArtificialFee> listjson(){
+	public List<OrderArtificial> listjson(){
 		return orderArtificialFeeService.findAll();
 	}
 	
 	
 	@ResponseBody
 	@RequestMapping(value="bill/save",method = RequestMethod.POST)
-	public OrderArtificialFee saveOrderArtificialFromBill(@RequestBody List<OrderArtificialFee> orderArtificials){
-		orderLbService.save(orderArtificials.get(0).getOrderLb());
-		for(OrderArtificialFee op : orderArtificials){
-			orderArtificialFeeService.save(op);
-		}
-		return new OrderArtificialFee();
+	public OrderArtificial saveOrderArtificialFromBill(@RequestBody List<OrderArtificial> orderArtificials){
+		orderArtificialFeeService.batchUpdate(orderArtificials);
+		return new OrderArtificial();
 	}
 	
 }

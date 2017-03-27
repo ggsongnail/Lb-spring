@@ -1,7 +1,12 @@
 package com.spoom.service.order;
 
+import java.util.Date;
 import java.util.List;
 
+import javax.persistence.EntityManager;
+
+import org.hibernate.SQLQuery;
+import org.hibernate.transform.Transformers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
@@ -21,6 +26,8 @@ import com.spoom.respository.order.OrderLbDao;
 public class OrderLbService {
 	@Autowired
 	private OrderLbDao orderDao;
+	@Autowired
+	private EntityManager em ;
 	
 	public List<OrderLb> findAll() {
 		return orderDao.findAll();
@@ -47,6 +54,10 @@ public class OrderLbService {
 	
 	public OrderLb findBySysNo(String sysNo){
 		return orderDao.findBySysNo(sysNo);
+	}
+	
+	public List<OrderLb> findForExcel(String sql,Date begin,Date end){
+		return (List<OrderLb>) em.createNativeQuery(sql).setParameter(1, begin).setParameter(2, end).unwrap(SQLQuery.class).setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP).list();  
 	}
 	
 }

@@ -43,7 +43,16 @@ public class OrderLb {
 	private String region;
 	private String brushArea;
 	private Double deposit;
+	private String depositType;
 	private Double budget;
+	//-----------------------
+	private Integer buildDays;//施工天数
+	private Integer buildPeople;//施工人数
+	private Date beginBuildDate;//开始施工日期
+	private Date doneBuildDate;//结束施工日期
+	private Double partMoney;//已收金额
+	private String sets;//是否选择套餐
+	//-----------------------
 	
 	/*@DateTimeFormat(pattern="yyyy-MM-dd HH:mm") */
 	@Temporal(TemporalType.TIMESTAMP)
@@ -55,7 +64,6 @@ public class OrderLb {
 	private Date updateDate;
 	private Date deleteDate;
 	private Integer status;
-	@Lob
 	private String remark;
 	@Version
 	private Integer version;
@@ -174,6 +182,12 @@ public class OrderLb {
 	}
 	public void setDeposit(Double deposit) {
 		this.deposit = deposit;
+	}
+	public String getDepositType() {
+		return depositType;
+	}
+	public void setDepositType(String depositType) {
+		this.depositType = depositType;
 	}
 	public Double getBudget() {
 		return budget;

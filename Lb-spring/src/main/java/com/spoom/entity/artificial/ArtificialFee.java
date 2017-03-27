@@ -18,7 +18,7 @@ import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
 import com.spoom.entity.dictionary.DictionaryClassify;
-import com.spoom.entity.order.OrderArtificialFee;
+import com.spoom.entity.order.OrderArtificial;
 import com.spoom.entity.order.OrderProduct;
 
 @Entity
@@ -49,7 +49,7 @@ public class ArtificialFee {
 	private Integer version;
 	
 	@Transient
-	private OrderArtificialFee orderArtificialFee;
+	private OrderArtificial orderArtificialFee;
 	public int getId() {
 		return id;
 	}
@@ -134,10 +134,10 @@ public class ArtificialFee {
 	public void setVersion(Integer version) {
 		this.version = version;
 	}
-	public OrderArtificialFee getOrderArtificialFee() {
+	public OrderArtificial getOrderArtificialFee() {
 		return orderArtificialFee;
 	}
-	public void setOrderArtificialFee(OrderArtificialFee orderArtificialFee) {
+	public void setOrderArtificialFee(OrderArtificial orderArtificialFee) {
 		this.orderArtificialFee = orderArtificialFee;
 	}
 }

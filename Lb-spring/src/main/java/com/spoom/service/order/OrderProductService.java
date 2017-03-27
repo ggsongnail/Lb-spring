@@ -1,15 +1,17 @@
 package com.spoom.service.order;
 
+import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import javax.persistence.EntityManager;
 
+import org.hibernate.SQLQuery;
+import org.hibernate.transform.Transformers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.spoom.entity.material.MaterialProduct;
-import com.spoom.entity.order.OrderLb;
 import com.spoom.entity.order.OrderProduct;
 import com.spoom.respository.order.OrderProductDao;
 
@@ -42,12 +44,9 @@ public class OrderProductService {
 		orderProductDao.delete(id);
 	}
 
-	public OrderProduct findByOrderLbAndMaterialProduct(OrderLb order, MaterialProduct materialProduct) {
-		return orderProductDao.findByOrderLbAndMaterialProduct(order, materialProduct);
-	}
-
-	public List<OrderProduct> findByOrderLb(OrderLb orderLb) {
-		return orderProductDao.findByOrderLb(orderLb);
+	public List<List<String>> findForExcel(String sql,Date begin,Date end){
+		return (List<List<String>>) em.createNativeQuery(sql).setParameter(1, begin).setParameter(2, end).unwrap(SQLQuery.class)
+				.setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP).list();
 	}
 
 	public void batchInsert(List list) {
