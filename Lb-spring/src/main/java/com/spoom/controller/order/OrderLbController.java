@@ -222,7 +222,7 @@ public class OrderLbController {
 	public void exportExcel(@RequestParam(value="beginDate") String beginDate,@RequestParam(value="endDate") String endDate,
 			HttpServletResponse response){
 		ServletOutputStream outputStream = null;
-		SimpleDateFormat sf = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+		SimpleDateFormat sf = new SimpleDateFormat("yyyy/MM/dd HH:mm");
 		try {
 			outputStream = response.getOutputStream();  
 	        String fileName = new String(("立邦刷新－销售订单").getBytes(), "ISO8859_1");  
