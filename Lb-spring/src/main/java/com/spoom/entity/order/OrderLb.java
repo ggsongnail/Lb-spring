@@ -93,6 +93,8 @@ public class OrderLb {
 	private Double gross;
 	private Double grossFinal;
 	
+	private String orderStatus;
+	
 	public int getId() {
 		return id;
 	}
@@ -362,5 +364,47 @@ public class OrderLb {
 	}
 	public void setGrossFinal(Double grossFinal) {
 		this.grossFinal = grossFinal;
+	}
+	public Integer getBuildDays() {
+		return buildDays;
+	}
+	public void setBuildDays(Integer buildDays) {
+		this.buildDays = buildDays;
+	}
+	public Integer getBuildPeople() {
+		return buildPeople;
+	}
+	public void setBuildPeople(Integer buildPeople) {
+		this.buildPeople = buildPeople;
+	}
+	public Date getBeginBuildDate() {
+		return beginBuildDate;
+	}
+	public void setBeginBuildDate(Date beginBuildDate) {
+		this.beginBuildDate = beginBuildDate;
+	}
+	public Date getDoneBuildDate() {
+		return doneBuildDate;
+	}
+	public void setDoneBuildDate(Date doneBuildDate) {
+		this.doneBuildDate = doneBuildDate;
+	}
+	public Double getPartMoney() {
+		return partMoney;
+	}
+	public void setPartMoney(Double partMoney) {
+		this.partMoney = partMoney;
+	}
+	public String getSets() {
+		return sets;
+	}
+	public void setSets(String sets) {
+		this.sets = sets;
+	}
+	public String getOrderStatus() {
+		return orderStatus;
+	}
+	public void setOrderStatus(String orderStatus) {
+		this.orderStatus = orderStatus;
 	}
 }

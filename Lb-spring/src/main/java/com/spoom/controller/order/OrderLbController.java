@@ -1,16 +1,17 @@
 package com.spoom.controller.order;
 
 import java.io.IOException;
-import java.sql.Date;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.servlet.ServletOutputStream;
@@ -114,24 +115,35 @@ public class OrderLbController {
 	}
 	
 	private Specification<OrderLb> getWhereClause(final Map<String,Object> params){
+		System.out.println(params);
 		final SimpleDateFormat sf = new SimpleDateFormat("yyyy/MM/dd HH:mm");
 		return new Specification<OrderLb>() {
 			public Predicate toPredicate(Root<OrderLb> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
 				try {
 					List<Predicate> predicates = new ArrayList<Predicate>();
 					for (Map.Entry<String, Object> entry : params.entrySet()) {
-						if ("signingDate_GTE".equals(entry.getKey())&&entry.getKey()!=null) {
-							System.out.println(sf.parse(entry.getValue().toString()));
-							predicates.add(cb.greaterThanOrEqualTo(root.get("signingDate").as(Date.class), sf.parse(entry.getValue().toString())));
-						}
-						if ("signingDate_LTE".equals(entry.getKey())&&entry.getKey()!=null) {
-							predicates.add(cb.lessThanOrEqualTo(root.get("signingDate").as(Date.class), sf.parse(entry.getValue().toString())));
+						if(entry.getValue()!=null){
+							String[] params = entry.getKey().split("_");
+							String field = params[0];
+							String type = params[1];
+							if(field.toUpperCase().contains("DATE")){
+								if(type.toUpperCase().equals("GTE")){
+									//Date.class用 util的不要用sql的
+									predicates.add(cb.greaterThanOrEqualTo(root.get(field).as(Date.class), sf.parse(entry.getValue().toString())));
+								}
+								if(type.toUpperCase().equals("LTE")){
+									predicates.add(cb.lessThanOrEqualTo(root.get(field).as(Date.class), sf.parse(entry.getValue().toString())));
+								}
+							}else{
+								predicates.add(cb.like(root.get(field).as(String.class), "%"+entry.getValue().toString()+"%"));
+							}
 						}
 					}
 					Predicate[] p = new Predicate[predicates.size()];  
 			        return cb.and(predicates.toArray(p)); 
 				} catch (Exception e) {
 					// TODO: handle exception
+					e.printStackTrace();
 				}
 				return null; 
 			}
@@ -210,7 +222,7 @@ public class OrderLbController {
 	public void exportExcel(@RequestParam(value="beginDate") String beginDate,@RequestParam(value="endDate") String endDate,
 			HttpServletResponse response){
 		ServletOutputStream outputStream = null;
-		SimpleDateFormat sf = new SimpleDateFormat("yyyy/MM/dd HH:mm");
+		SimpleDateFormat sf = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
 		try {
 			outputStream = response.getOutputStream();  
 	        String fileName = new String(("立邦刷新－销售订单").getBytes(), "ISO8859_1");  
