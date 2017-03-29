@@ -34,7 +34,7 @@ public class OrderRefuse {
 	@JoinColumn(name="order_id")
 	private OrderLb orderLb;
 	private String people;
-	@Temporal(TemporalType.TIMESTAMP)
+	@Temporal(TemporalType.TIMESTAMP)//入库时分秒
 	@JsonFormat(pattern="yyyy/MM/dd HH:mm",timezone = "GMT+8") 
 	private Date talkTime;
 	private String talkWay;

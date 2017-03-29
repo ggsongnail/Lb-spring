@@ -61,7 +61,7 @@ public class OrderRefuseController {
 	public Map<String,Object> refusesJson(@PathVariable int orderId){
 		Map<String,Object> map = new HashMap<String,Object>();
 		OrderLb orderLb = orderLbService.findById(orderId);
-		List<OrderRefuse> orderRefuses = orderRefuseService.findByOrderLb(orderLb);
+		List<OrderRefuse> orderRefuses = orderRefuseService.findByOrderLbOrderByTalkTimeAsc(orderLb);
 		map.put("orderLb", orderLb);
 		map.put("orderRefuses", orderRefuses);
 		return map;

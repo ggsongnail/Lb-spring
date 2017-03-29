@@ -14,5 +14,5 @@ import com.spoom.entity.order.OrderRefuse;
  *
  */
 public interface OrderRefuseDao extends JpaRepository<OrderRefuse, Integer>,JpaSpecificationExecutor<OrderRefuse>{
-	List<OrderRefuse> findByOrderLb(OrderLb orderLb);
+	List<OrderRefuse> findByOrderLbOrderByTalkTimeAsc(OrderLb orderLb);
 }

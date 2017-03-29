@@ -46,8 +46,8 @@ public class OrderRefuseService {
 		orderRefuseDao.delete(id);
 	}
 	
-	public List<OrderRefuse> findByOrderLb(OrderLb orderLb){
-		return orderRefuseDao.findByOrderLb(orderLb);
+	public List<OrderRefuse> findByOrderLbOrderByTalkTimeAsc(OrderLb orderLb){
+		return orderRefuseDao.findByOrderLbOrderByTalkTimeAsc(orderLb);
 	}
 	
 	public void batchUpdate(List list) {
