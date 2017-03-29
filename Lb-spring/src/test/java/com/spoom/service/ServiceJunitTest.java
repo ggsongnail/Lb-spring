@@ -48,18 +48,6 @@ public class ServiceJunitTest {
 	
 	@Test
 	public void testInsert() throws ParseException{
-		SimpleDateFormat sf = new SimpleDateFormat("yyyy/MM/dd HH:mm");
-		String begin = "2017/03/01 17:00";
-		String end = "2017/03/29 17:00";
-		List<String> pList = materialProductService.getMaterialProducts();
-		List<List<String>> list = orderProductService.findForExcel(ExcelParams.getMaterialSQL(pList), sf.parse(begin), sf.parse(end));
-		//System.out.println(list);
-		for(int r=0;r<list.size();r++){
-			Map row = (Map) list.get(r);
-			for(int c=0;c<pList.size();c++){
-				System.out.println(row.get(pList.get(c)));
-			}
-		}
 	}
 	
 	public void testUpdate(){
