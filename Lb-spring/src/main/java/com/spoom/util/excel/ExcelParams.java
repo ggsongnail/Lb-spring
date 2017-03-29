@@ -9,7 +9,7 @@ public class ExcelParams {
 	
 	public static String getOrderSQL(String[] params){
 		StringBuffer sb = new StringBuffer();
-		sb.append("select * from order_lb where signing_date > ?1 and signing_date < ?2");
+		sb.append("select * from order_lb where id = ?1");//signing_date > ?1 and signing_date < ?2
 		return sb.toString();
 	}
 	
@@ -24,7 +24,7 @@ public class ExcelParams {
 			}
 		}
 		sb.append("from (select op.order_id,ol.sys_no,ol.customer, concat_ws('/', op.product_name, op.standard, op.price) as combo, op.count from order_product op ");
-		sb.append("left join order_lb ol on ol.id = op.order_id  where ol.signing_date > ?1 and ol.signing_date < ?2) rd ");
+		sb.append("left join order_lb ol on ol.id = op.order_id  where ol.id = ?1) rd ");//ol.signing_date > ?1 and ol.signing_date < ?2
 	    sb.append("GROUP BY rd.order_id,rd.sys_no,rd.customer"); 
 		return sb.toString();
 	}
