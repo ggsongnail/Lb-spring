@@ -67,7 +67,7 @@ public class MaterialProductService {
 	}
 	
 	public List<OrderProductFinal> getOrderProductFinalsHis(int orderId){
-		String sql = "select mp.id mId,op.id oId,op.order_id orderId,mp.name,mp.standard,mp.price,op.count,op.total,op.dif_count difCount,op.dif_total difTotal from material_product mp left join order_product op on mp.id = op.product_id where op.order_id = ?1 and op.dif_count <> 0";
+		String sql = "select mp.id mId,op.id oId,op.order_id orderId,mp.name,mp.standard,mp.price,op.count,op.total,op.dif_count difCount,op.dif_total difTotal from material_product mp left join order_product op on mp.id = op.product_id where op.order_id = ?1 and (op.dif_count <> 0 or op.dif_total <> 0)";
 		return (List<OrderProductFinal>) em.createNativeQuery(sql).setParameter(1, orderId).unwrap(SQLQuery.class).setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP).list();  
 	}
 	
