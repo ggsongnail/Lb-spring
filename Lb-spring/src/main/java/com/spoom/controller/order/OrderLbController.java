@@ -1,6 +1,7 @@
 package com.spoom.controller.order;
 
 import java.io.IOException;
+import java.net.URLEncoder;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -11,10 +12,10 @@ import java.util.Map;
 
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.StringUtils;
@@ -39,11 +40,13 @@ import com.spoom.entity.order.OrderArtificialFeeFinal;
 import com.spoom.entity.order.OrderLb;
 import com.spoom.entity.order.OrderProduct;
 import com.spoom.entity.order.OrderProductFinal;
+import com.spoom.entity.order.OrderRefuse;
 import com.spoom.service.artificial.ArtificialFeeService;
 import com.spoom.service.material.MaterialProductService;
 import com.spoom.service.order.OrderArtificialFeeService;
 import com.spoom.service.order.OrderLbService;
 import com.spoom.service.order.OrderProductService;
+import com.spoom.service.order.OrderRefuseService;
 import com.spoom.util.excel.ExcelParams;
 import com.spoom.util.excel.ExportUtil;
 
@@ -69,6 +72,9 @@ public class OrderLbController {
 	
 	@Autowired
 	private OrderArtificialFeeService orderArtificialFeeService;
+	
+	@Autowired
+	private OrderRefuseService orderRefuseService;
 	
 	@RequestMapping(method = RequestMethod.GET)
 	public String list(){
@@ -217,128 +223,41 @@ public class OrderLbController {
 		return null;
 	}
 	
-	@ResponseBody
-	@RequestMapping(value="export/excel",method = RequestMethod.GET)
-	public void exportExcel(@RequestParam(value="beginDate") String beginDate,@RequestParam(value="endDate") String endDate,
-			HttpServletResponse response){
-		ServletOutputStream outputStream = null;
-		SimpleDateFormat sf = new SimpleDateFormat("yyyy/MM/dd HH:mm");
-		try {
-			outputStream = response.getOutputStream();  
-	        String fileName = new String(("立邦刷新－销售订单").getBytes(), "ISO8859_1");  
-	        response.setHeader("Content-disposition", "attachment; filename=" + fileName + ".xlsx");// 组装附件名称和格式 
-			List<OrderLb> list = orderService.findForExcel(ExcelParams.getOrderSQL(ExcelParams.orderParams), sf.parse(beginDate), sf.parse(endDate));
-			// 创建一个workbook 对应一个excel应用文件
-			XSSFWorkbook workBook = new XSSFWorkbook();
-			// 在workbook中添加一个sheet,对应Excel文件中的sheet
-			XSSFSheet sheet = workBook.createSheet("销售订单数据");
-			ExportUtil exportUtil = new ExportUtil(workBook, sheet);
-			XSSFCellStyle headStyle = exportUtil.getHeadStyle();
-			XSSFCellStyle bodyStyle = exportUtil.getBodyStyle();
-			// 构建表头
-			XSSFRow headRow = sheet.createRow(0);
-			XSSFCell cell = null;
-			for (int i = 0; i < ExcelParams.orderChinese.length; i++) {
-				cell = headRow.createCell(i);
-				cell.setCellStyle(headStyle);
-				cell.setCellValue(ExcelParams.orderChinese[i]);
-			}
-			// 构建表体数据
-			//List<OrderLb> list = orderService.findForExcel(ExcelParams.getOrderSQL(ExcelParams.orderParams), "2017-03-02", "2017-04-02");
-			for(int r=0;r<list.size();r++){
-				XSSFRow bodyRow = sheet.createRow(r + 1);
-				Map<String,Object> row = new HashMap<String,Object>();
-		        row = (Map) list.get(r);  
-				for(int c=0;c<ExcelParams.orderParams.length;c++){
-					cell = bodyRow.createCell(c);
-					cell.setCellStyle(bodyStyle);
-					cell.setCellValue((row.get(ExcelParams.orderParams[c])+"").equals("null")?"":row.get(ExcelParams.orderParams[c])+"");
-				}
-			}
-			workBook.write(outputStream);
-			outputStream.flush();
-			outputStream.close();
-		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (ParseException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}finally {
-			try {
-				outputStream.close();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
-
-    }  
 	
+	
+	//excel导出
 	@ResponseBody
-	@RequestMapping(value="export/material/excel",method = RequestMethod.GET)
-	public void exportExcel2(@RequestParam(value="beginDate") String beginDate,@RequestParam(value="endDate") String endDate,
-			HttpServletResponse response){
+	@RequestMapping(value="export/excel/{orderId}",method = RequestMethod.GET)
+	public void exportExcel(@PathVariable int orderId,HttpServletRequest request,HttpServletResponse response){
 		ServletOutputStream outputStream = null;
-		SimpleDateFormat sf = new SimpleDateFormat("yyyy/MM/dd HH:mm");
 		try {
-			outputStream = response.getOutputStream();  
-	        String fileName = new String(("立邦刷新－主要材料销售明细").getBytes(), "ISO8859_1");  
-	        response.setHeader("Content-disposition", "attachment; filename=" + fileName + ".xlsx");// 组装附件名称和格式 
-	        List<String> pList = materialProductService.getMaterialProducts();
-			List<List<String>> list = orderProductService.findForExcel(ExcelParams.getMaterialSQL(pList), sf.parse(beginDate), sf.parse(endDate));
+			outputStream = response.getOutputStream();
+			response.reset();// 清空输出流
+			String fileName = "立邦刷新-订单明细";
+			final String userAgent = request.getHeader("USER-AGENT");
+			String finalFileName = null;
+			if (StringUtils.contains(userAgent, "MSIE")) {// IE浏览器
+				finalFileName = URLEncoder.encode(fileName, "UTF8");
+			} else if (StringUtils.contains(userAgent, "Mozilla")) {// google,火狐浏览器
+				finalFileName = new String(fileName.getBytes(), "ISO8859-1");
+			} else {
+				finalFileName = URLEncoder.encode(fileName, "UTF8");// 其他浏览器
+			}
+			response.setHeader("Content-Disposition", "attachment; filename=\"" + finalFileName + ".xlsx");// 这里设置一下让浏览器弹出下载提示框，而不是直接在浏览器中打开
+			response.setContentType("application/vnd.ms-excel");
+
 			// 创建一个workbook 对应一个excel应用文件
 			XSSFWorkbook workBook = new XSSFWorkbook();
-			// 在workbook中添加一个sheet,对应Excel文件中的sheet
-			XSSFSheet sheet = workBook.createSheet("主要材料销售明细");
-			ExportUtil exportUtil = new ExportUtil(workBook, sheet);
-			XSSFCellStyle headStyle = exportUtil.getHeadStyle();
-			XSSFCellStyle bodyStyle = exportUtil.getBodyStyle();
-			// 构建表头
-			XSSFRow headRow = sheet.createRow(0);
-			XSSFCell cell = null;
-			cell = headRow.createCell(0);
-			cell.setCellStyle(headStyle);
-			cell.setCellValue("系统编号");
-			cell = headRow.createCell(1);
-			cell.setCellStyle(headStyle);
-			cell.setCellValue("客户姓名");
-			cell = headRow.createCell(2);
-			cell.setCellStyle(headStyle);
-			cell.setCellValue("合同编号");
-			for (int i = 0; i < pList.size(); i++) {
-				cell = headRow.createCell(i+3);
-				cell.setCellStyle(headStyle);
-				cell.setCellValue(pList.get(i));
-			}
-			// 构建表体数据
-			//List<OrderLb> list = orderService.findForExcel(ExcelParams.getOrderSQL(ExcelParams.orderParams), "2017-03-02", "2017-04-02");
-			//System.out.println(list);
-			for(int r=0;r<list.size();r++){
-				XSSFRow bodyRow = sheet.createRow(r + 1);
-				Map row = (Map) list.get(r);
-				cell = bodyRow.createCell(0);
-				cell.setCellStyle(bodyStyle);
-				cell.setCellValue(row.get("sys_no")+"");
-				cell = bodyRow.createCell(1);
-				cell.setCellStyle(bodyStyle);
-				cell.setCellValue((row.get("customer")+"").equals("null")?"":row.get("customer")+"");
-				cell = bodyRow.createCell(2);
-				cell.setCellStyle(bodyStyle);
-				cell.setCellValue((row.get("order_no")+"").equals("null")?"":row.get("order_no")+"");
-				for(int c=0;c<pList.size();c++){
-					cell = bodyRow.createCell(c+3);
-					cell.setCellStyle(bodyStyle);
-					cell.setCellValue((row.get(pList.get(c))+"").equals("null")?"":row.get(pList.get(c))+"");
-				}
-			}
+			writeOrderDetail(workBook, orderId);
+			writeMainProducts(workBook, orderId);
+			writeAssistProducts(workBook, orderId);
+			writeRefuse(workBook, orderId);
 			workBook.write(outputStream);
 			outputStream.flush();
 			outputStream.close();
 		} catch (IOException e) {
 			e.printStackTrace();
-		} catch (ParseException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}finally {
+		} finally {
 			try {
 				outputStream.close();
 			} catch (IOException e) {
@@ -347,4 +266,241 @@ public class OrderLbController {
 		}
 
     }
+	
+	
+	public XSSFWorkbook writeOrderDetail(XSSFWorkbook workBook,int orderId){
+		List<OrderLb> list = orderService.findForExcel(ExcelParams.getOrderSQL(ExcelParams.orderParams), orderId);
+		// 在workbook中添加一个sheet,对应Excel文件中的sheet
+		XSSFSheet sheet = workBook.createSheet("销售订单数据");
+		ExportUtil exportUtil = new ExportUtil(workBook, sheet);
+		XSSFCellStyle headStyle = exportUtil.getHeadStyle();
+		XSSFCellStyle bodyStyle = exportUtil.getBodyStyle();
+		// 构建表头
+		XSSFRow headRow = sheet.createRow(0);
+		XSSFCell cell = null;
+		for (int i = 0; i < ExcelParams.orderChinese.length; i++) {
+			cell = headRow.createCell(i);
+			cell.setCellStyle(headStyle);
+			cell.setCellValue(ExcelParams.orderChinese[i]);
+		}
+		// 构建表体数据
+		//List<OrderLb> list = orderService.findForExcel(ExcelParams.getOrderSQL(ExcelParams.orderParams), "2017-03-02", "2017-04-02");
+		for(int r=0;r<list.size();r++){
+			XSSFRow bodyRow = sheet.createRow(r + 1);
+			Map<String,Object> row = new HashMap<String,Object>();
+	        row = (Map) list.get(r);  
+			for(int c=0;c<ExcelParams.orderParams.length;c++){
+				cell = bodyRow.createCell(c);
+				cell.setCellStyle(bodyStyle);
+				cell.setCellValue((row.get(ExcelParams.orderParams[c])+"").equals("null")?"":row.get(ExcelParams.orderParams[c])+"");
+			}
+		}
+		
+		return workBook;
+	}
+	
+	public XSSFWorkbook writeMainProducts(XSSFWorkbook workBook,int orderId){
+		SimpleDateFormat sf = new SimpleDateFormat("yyyy/MM/dd HH:mm");
+		List<String> pList = materialProductService.getMainProductsCombo();
+		List<List<String>> list = orderProductService.findForExcel(ExcelParams.getMaterialSQL(pList), orderId);
+		// 在workbook中添加一个sheet,对应Excel文件中的sheet
+		XSSFSheet sheet = workBook.createSheet("主要材料销售明细");
+		if(list==null)
+			return workBook;
+		ExportUtil exportUtil = new ExportUtil(workBook, sheet);
+		XSSFCellStyle headStyle = exportUtil.getHeadStyle();
+		XSSFCellStyle bodyStyle = exportUtil.getBodyStyle();
+		// 构建表头
+		XSSFRow headRow = sheet.createRow(0);
+		XSSFCell cell = null;
+		cell = headRow.createCell(0);
+		cell.setCellStyle(headStyle);
+		cell.setCellValue("系统编号");
+		cell = headRow.createCell(1);
+		cell.setCellStyle(headStyle);
+		cell.setCellValue("客户姓名");
+		cell = headRow.createCell(2);
+		cell.setCellStyle(headStyle);
+		cell.setCellValue("合同编号");
+		for (int i = 0; i < pList.size(); i++) {
+			cell = headRow.createCell(i+3);
+			cell.setCellStyle(headStyle);
+			cell.setCellValue(pList.get(i));
+		}
+		// 构建表体数据
+		for(int r=0;r<list.size();r++){
+			XSSFRow bodyRow = sheet.createRow(r + 1);
+			Map row = (Map) list.get(r);
+			cell = bodyRow.createCell(0);
+			cell.setCellStyle(bodyStyle);
+			cell.setCellValue(row.get("sys_no")+"");
+			cell = bodyRow.createCell(1);
+			cell.setCellStyle(bodyStyle);
+			cell.setCellValue((row.get("customer")+"").equals("null")?"":row.get("customer")+"");
+			cell = bodyRow.createCell(2);
+			cell.setCellStyle(bodyStyle);
+			cell.setCellValue((row.get("order_no")+"").equals("null")?"":row.get("order_no")+"");
+			for(int c=0;c<pList.size();c++){
+				cell = bodyRow.createCell(c+3);
+				cell.setCellStyle(bodyStyle);
+				cell.setCellValue((row.get(pList.get(c))+"").equals("null")?"":row.get(pList.get(c))+"");
+			}
+		}
+		return workBook;
+	}
+	
+	public XSSFWorkbook writeAssistProducts(XSSFWorkbook workBook,int orderId){
+		SimpleDateFormat sf = new SimpleDateFormat("yyyy/MM/dd HH:mm");
+		List<String> pList = materialProductService.getAssistProductsCombo();
+		List<List<String>> list = orderProductService.findForExcel(ExcelParams.getMaterialSQL(pList), orderId);
+		// 在workbook中添加一个sheet,对应Excel文件中的sheet
+		XSSFSheet sheet = workBook.createSheet("辅助材料销售明细");
+		if(list==null)
+			return workBook;
+		ExportUtil exportUtil = new ExportUtil(workBook, sheet);
+		XSSFCellStyle headStyle = exportUtil.getHeadStyle();
+		XSSFCellStyle bodyStyle = exportUtil.getBodyStyle();
+		// 构建表头
+		XSSFRow headRow = sheet.createRow(0);
+		XSSFCell cell = null;
+		cell = headRow.createCell(0);
+		cell.setCellStyle(headStyle);
+		cell.setCellValue("系统编号");
+		cell = headRow.createCell(1);
+		cell.setCellStyle(headStyle);
+		cell.setCellValue("客户姓名");
+		cell = headRow.createCell(2);
+		cell.setCellStyle(headStyle);
+		cell.setCellValue("合同编号");
+		for (int i = 0; i < pList.size(); i++) {
+			cell = headRow.createCell(i+3);
+			cell.setCellStyle(headStyle);
+			cell.setCellValue(pList.get(i));
+		}
+		// 构建表体数据
+		for(int r=0;r<list.size();r++){
+			XSSFRow bodyRow = sheet.createRow(r + 1);
+			Map row = (Map) list.get(r);
+			cell = bodyRow.createCell(0);
+			cell.setCellStyle(bodyStyle);
+			cell.setCellValue(row.get("sys_no")+"");
+			cell = bodyRow.createCell(1);
+			cell.setCellStyle(bodyStyle);
+			cell.setCellValue((row.get("customer")+"").equals("null")?"":row.get("customer")+"");
+			cell = bodyRow.createCell(2);
+			cell.setCellStyle(bodyStyle);
+			cell.setCellValue((row.get("order_no")+"").equals("null")?"":row.get("order_no")+"");
+			for(int c=0;c<pList.size();c++){
+				cell = bodyRow.createCell(c+3);
+				cell.setCellStyle(bodyStyle);
+				cell.setCellValue((row.get(pList.get(c))+"").equals("null")?"":row.get(pList.get(c))+"");
+			}
+		}
+		return workBook;
+	}
+	
+	public XSSFWorkbook writeRefuse(XSSFWorkbook workBook,int orderId){
+		SimpleDateFormat sf = new SimpleDateFormat("yyyy/MM/dd HH:mm");
+		OrderLb order = orderService.findById(orderId);
+		List<OrderRefuse> orderRefuses = orderRefuseService.findByOrderLbOrderByTalkTimeAsc(order);
+		// 在workbook中添加一个sheet,对应Excel文件中的sheet
+		XSSFSheet sheet = workBook.createSheet("拒绝订单情况");
+		if(orderRefuses==null)
+			return workBook;
+		ExportUtil exportUtil = new ExportUtil(workBook, sheet);
+		XSSFCellStyle headStyle = exportUtil.getHeadStyle();
+		XSSFCellStyle bodyStyle = exportUtil.getBodyStyle();
+		
+		// 构建表头
+		XSSFRow headRow = sheet.createRow(0);
+		XSSFCell cell = null;
+		cell = headRow.createCell(0);
+		cell.setCellStyle(headStyle);
+		cell.setCellValue("系统编号");
+		cell = headRow.createCell(1);
+		cell.setCellStyle(headStyle);
+		cell.setCellValue("客户姓名");
+		cell = headRow.createCell(2);
+		cell.setCellStyle(headStyle);
+		cell.setCellValue("施工地址");
+		cell = headRow.createCell(3);
+		cell.setCellStyle(headStyle);
+		cell.setCellValue("联系电话");
+		cell = headRow.createCell(4);
+		cell.setCellStyle(headStyle);
+		cell.setCellValue("合同编号");
+		int o = 5;int i = 1;
+		for(OrderRefuse of:orderRefuses){
+			cell = headRow.createCell(o);
+			cell.setCellStyle(headStyle);
+			cell.setCellValue("跟进销售专员");
+			
+			cell = headRow.createCell(o+1);
+			cell.setCellStyle(headStyle);
+			cell.setCellValue("第"+i+"次洽谈时间");
+			
+			cell = headRow.createCell(o+2);
+			cell.setCellStyle(headStyle);
+			cell.setCellValue("第"+i+"次洽谈方式");
+			
+			cell = headRow.createCell(o+3);
+			cell.setCellStyle(headStyle);
+			cell.setCellValue("第"+i+"次拒绝原因");
+			
+			cell = headRow.createCell(o+4);
+			cell.setCellStyle(headStyle);
+			cell.setCellValue("第"+i+"次拒绝解决方案");
+			
+			i++;
+			o = o+5;
+		}
+		
+		//构建表体数据
+		XSSFRow bodyRow = sheet.createRow(1);
+		cell = bodyRow.createCell(0);
+		cell.setCellStyle(bodyStyle);
+		cell.setCellValue(order.getSysNo());
+		
+		cell = bodyRow.createCell(1);
+		cell.setCellStyle(bodyStyle);
+		cell.setCellValue(order.getCustomer());
+		
+		cell = bodyRow.createCell(2);
+		cell.setCellStyle(bodyStyle);
+		cell.setCellValue(order.getBuildAddress());
+		
+		cell = bodyRow.createCell(3);
+		cell.setCellStyle(bodyStyle);
+		cell.setCellValue(order.getTel());
+		
+		cell = bodyRow.createCell(4);
+		cell.setCellStyle(bodyStyle);
+		cell.setCellValue(order.getOrderNo());
+		
+		int ot = 5; 
+		for(OrderRefuse of:orderRefuses){
+			cell = bodyRow.createCell(ot);
+			cell.setCellStyle(bodyStyle);
+			cell.setCellValue(of.getPeople());
+			
+			cell = bodyRow.createCell(ot+1);
+			cell.setCellStyle(bodyStyle);
+			cell.setCellValue(sf.format(of.getTalkTime()));
+			
+			cell = bodyRow.createCell(ot+2);
+			cell.setCellStyle(bodyStyle);
+			cell.setCellValue(of.getTalkWay());
+			
+			cell = bodyRow.createCell(ot+3);
+			cell.setCellStyle(bodyStyle);
+			cell.setCellValue(of.getReason());
+			
+			cell = bodyRow.createCell(ot+4);
+			cell.setCellStyle(bodyStyle);
+			cell.setCellValue(of.getPlan());
+			
+			ot = ot + 5;
+		}
+		return workBook;
+	}
 }
