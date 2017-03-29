@@ -44,8 +44,8 @@ public class OrderProductService {
 		orderProductDao.delete(id);
 	}
 
-	public List<List<String>> findForExcel(String sql,Date begin,Date end){
-		return (List<List<String>>) em.createNativeQuery(sql).setParameter(1, begin).setParameter(2, end).unwrap(SQLQuery.class)
+	public List<List<String>> findForExcel(String sql,int orderId){
+		return (List<List<String>>) em.createNativeQuery(sql).setParameter(1, orderId).unwrap(SQLQuery.class)
 				.setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP).list();
 	}
 
