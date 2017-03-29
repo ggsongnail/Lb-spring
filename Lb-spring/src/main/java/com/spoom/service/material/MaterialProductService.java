@@ -91,8 +91,14 @@ public class MaterialProductService {
 		
 	}
 	
-	public List getMaterialProducts(){
+	public List getMainProductsCombo(){
 		String sql = "SELECT concat_ws('/', name, standard, price) as combo FROM `lbsys`.`material_product` WHERE  `material_classify_id` <>8";
+		List strs =  em.createNativeQuery(sql).getResultList();
+		return strs;
+	}
+	
+	public List getAssistProductsCombo(){
+		String sql = "SELECT concat_ws('/', name, standard, price) as combo FROM `lbsys`.`material_product` WHERE  `material_classify_id` =8";
 		List strs =  em.createNativeQuery(sql).getResultList();
 		return strs;
 	}
