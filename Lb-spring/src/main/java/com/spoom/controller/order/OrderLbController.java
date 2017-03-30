@@ -28,6 +28,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -35,6 +36,10 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.type.CollectionType;
 import com.spoom.entity.order.OrderArtificial;
 import com.spoom.entity.order.OrderArtificialFeeFinal;
 import com.spoom.entity.order.OrderLb;
@@ -91,13 +96,80 @@ public class OrderLbController {
 	@ResponseBody
 	@RequestMapping(value="save",method = RequestMethod.POST)
 	public OrderLb saveOrder(@RequestBody OrderLb order){
-		/*if(StringUtils.isBlank(order.getOrderNo())){
-			SimpleDateFormat sf = new SimpleDateFormat("yyyyMMddHHmmss");
-			String time = sf.format(new Date());
-			order.setOrderNo(time);
-		}*/
 		orderService.save(order);
 		return order;
+	}
+	
+	@ResponseBody
+	@RequestMapping(value="final/save",method = RequestMethod.POST)
+	@Transactional
+	public OrderLb saveFinalOrder(@RequestBody Map map){
+		ObjectMapper mapper = new ObjectMapper(); 
+		try {
+			OrderLb order = mapper.readValue(map.get("orderLb").toString(), OrderLb.class);
+			
+			CollectionType plistType = mapper.getTypeFactory().constructCollectionType(ArrayList.class, OrderProductFinal.class);
+			List<OrderProductFinal> pFinals = (List<OrderProductFinal>) mapper.readValue(map.get("confMaterial").toString(), plistType);
+			
+			CollectionType mlistType = mapper.getTypeFactory().constructCollectionType(ArrayList.class, OrderArtificialFeeFinal.class);
+			List<OrderArtificialFeeFinal> mFinals = (List<OrderArtificialFeeFinal>) mapper.readValue(map.get("confMan").toString(), mlistType);
+			
+			List<OrderProduct> opList = new ArrayList<OrderProduct>();
+			for(OrderProductFinal op:pFinals){
+				OrderProduct orderProduct  = orderProductService.findById(op.getoId());
+				if(orderProduct!=null){
+					orderProduct.setDifCount(op.getDifCount());
+					orderProduct.setDifTotal(op.getDifTotal());
+					//orderProductService.save(orderProduct);
+					opList.add(orderProduct);
+				}else{
+					OrderProduct ghost = new OrderProduct();
+					ghost.setOrderId(op.getOrderId());
+					ghost.setProductId(op.getmId());
+					ghost.setDifCount(op.getDifCount());
+					ghost.setDifTotal(op.getDifTotal());
+					//orderProductService.save(ghost);
+					opList.add(ghost);
+				}
+			}
+			
+			List<OrderArtificial> oaList = new ArrayList<OrderArtificial>();
+			for(OrderArtificialFeeFinal op:mFinals){
+				OrderArtificial orderArtificialFee  = orderArtificialFeeService.findById(op.getoId());
+				if(orderArtificialFee!=null){
+					orderArtificialFee.setDifCount(op.getDifCount());
+					orderArtificialFee.setDifTotal(op.getDifTotal());
+					//orderArtificialFeeService.save(orderArtificialFee);
+					oaList.add(orderArtificialFee);
+				}else{
+					OrderArtificial ghost = new OrderArtificial();
+					ghost.setOrderId(op.getOrderId());
+					ghost.setArtificialFeeId(op.getmId());
+					ghost.setDifCount(op.getDifCount());
+					ghost.setDifTotal(op.getDifTotal());
+					//orderArtificialFeeService.save(ghost);
+					oaList.add(ghost);
+				}
+			}
+			
+			
+			
+			orderService.save(order);
+			orderProductService.batchUpdate(opList);
+			orderArtificialFeeService.batchUpdate(oaList);
+			
+		} catch (JsonParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (JsonMappingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		//orderService.save(order);
+		return null;
 	}
 	
 	@ResponseBody
@@ -176,50 +248,12 @@ public class OrderLbController {
 	@ResponseBody
 	@RequestMapping(value="final/material/save",method = RequestMethod.POST)
 	public OrderLb saveFinalMaterial(@RequestBody List<OrderProductFinal> ops){
-		List<OrderProduct> opList = new ArrayList<OrderProduct>();
-		for(OrderProductFinal op:ops){
-			OrderProduct orderProduct  = orderProductService.findById(op.getoId());
-			if(orderProduct!=null){
-				orderProduct.setDifCount(op.getDifCount());
-				orderProduct.setDifTotal(op.getDifTotal());
-				//orderProductService.save(orderProduct);
-				opList.add(orderProduct);
-			}else{
-				OrderProduct ghost = new OrderProduct();
-				ghost.setOrderId(op.getOrderId());
-				ghost.setProductId(op.getmId());
-				ghost.setDifCount(op.getDifCount());
-				ghost.setDifTotal(op.getDifTotal());
-				//orderProductService.save(ghost);
-				opList.add(ghost);
-			}
-		}
-		orderProductService.batchUpdate(opList);
 		return null;
 	}
 	
 	@ResponseBody
 	@RequestMapping(value="final/man/save",method = RequestMethod.POST)
 	public OrderLb saveFinalMan(@RequestBody List<OrderArtificialFeeFinal> ops){
-		List<OrderArtificial> oaList = new ArrayList<OrderArtificial>();
-		for(OrderArtificialFeeFinal op:ops){
-			OrderArtificial orderArtificialFee  = orderArtificialFeeService.findById(op.getoId());
-			if(orderArtificialFee!=null){
-				orderArtificialFee.setDifCount(op.getDifCount());
-				orderArtificialFee.setDifTotal(op.getDifTotal());
-				//orderArtificialFeeService.save(orderArtificialFee);
-				oaList.add(orderArtificialFee);
-			}else{
-				OrderArtificial ghost = new OrderArtificial();
-				ghost.setOrderId(op.getOrderId());
-				ghost.setArtificialFeeId(op.getmId());
-				ghost.setDifCount(op.getDifCount());
-				ghost.setDifTotal(op.getDifTotal());
-				//orderArtificialFeeService.save(ghost);
-				oaList.add(ghost);
-			}
-		}
-		orderArtificialFeeService.batchUpdate(oaList);
 		return null;
 	}
 	
