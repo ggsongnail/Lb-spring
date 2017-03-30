@@ -261,8 +261,8 @@ public class OrderLbController {
 	
 	//excel导出
 	@ResponseBody
-	@RequestMapping(value="export/excel/{orderId}",method = RequestMethod.GET)
-	public void exportExcel(@PathVariable int orderId,HttpServletRequest request,HttpServletResponse response){
+	@RequestMapping(value="export/excel",method = RequestMethod.GET)
+	public void exportExcel(@RequestParam(value="beginDate") Date beginDate,@RequestParam(value="endDate") Date endDate,HttpServletRequest request,HttpServletResponse response){
 		ServletOutputStream outputStream = null;
 		try {
 			outputStream = response.getOutputStream();
@@ -282,10 +282,10 @@ public class OrderLbController {
 
 			// 创建一个workbook 对应一个excel应用文件
 			XSSFWorkbook workBook = new XSSFWorkbook();
-			writeOrderDetail(workBook, orderId);
-			writeMainProducts(workBook, orderId);
-			writeAssistProducts(workBook, orderId);
-			writeRefuse(workBook, orderId);
+			writeOrderDetail(workBook, beginDate, endDate);
+			writeMainProducts(workBook, beginDate, endDate);
+			writeAssistProducts(workBook, beginDate,endDate);
+			writeRefuse(workBook, beginDate,endDate);
 			workBook.write(outputStream);
 			outputStream.flush();
 			outputStream.close();
@@ -302,8 +302,8 @@ public class OrderLbController {
     }
 	
 	
-	public XSSFWorkbook writeOrderDetail(XSSFWorkbook workBook,int orderId){
-		List<OrderLb> list = orderService.findForExcel(ExcelParams.getOrderSQL(ExcelParams.orderParams), orderId);
+	public XSSFWorkbook writeOrderDetail(XSSFWorkbook workBook,Date beginDate,Date endDate){
+		List<OrderLb> list = orderService.findForExcel(ExcelParams.getOrderSQL(ExcelParams.orderParams), beginDate,endDate);
 		// 在workbook中添加一个sheet,对应Excel文件中的sheet
 		XSSFSheet sheet = workBook.createSheet("销售订单数据");
 		ExportUtil exportUtil = new ExportUtil(workBook, sheet);
@@ -336,7 +336,7 @@ public class OrderLbController {
 	public XSSFWorkbook writeMainProducts(XSSFWorkbook workBook,Date beginDate,Date endDate){
 		SimpleDateFormat sf = new SimpleDateFormat("yyyy/MM/dd HH:mm");
 		List<String> pList = materialProductService.getMainProductsCombo();
-		List<List<String>> list = orderProductService.findForExcel(ExcelParams.getMaterialSQL(pList), beginDate, endDate);
+		List<Map> list = orderProductService.findForExcel(ExcelParams.getMaterialSQL(pList), beginDate, endDate);
 		// 在workbook中添加一个sheet,对应Excel文件中的sheet
 		XSSFSheet sheet = workBook.createSheet("主要材料销售明细");
 		if(list==null)
@@ -383,10 +383,10 @@ public class OrderLbController {
 		return workBook;
 	}
 	
-	public XSSFWorkbook writeAssistProducts(XSSFWorkbook workBook,int orderId){
+	public XSSFWorkbook writeAssistProducts(XSSFWorkbook workBook,Date beginDate,Date endDate){
 		SimpleDateFormat sf = new SimpleDateFormat("yyyy/MM/dd HH:mm");
 		List<String> pList = materialProductService.getAssistProductsCombo();
-		List<List<String>> list = orderProductService.findForExcel(ExcelParams.getMaterialSQL(pList), orderId);
+		List<Map> list = orderProductService.findForExcel(ExcelParams.getMaterialSQL(pList), beginDate,endDate);
 		// 在workbook中添加一个sheet,对应Excel文件中的sheet
 		XSSFSheet sheet = workBook.createSheet("辅助材料销售明细");
 		if(list==null)
@@ -435,11 +435,10 @@ public class OrderLbController {
 	
 	public XSSFWorkbook writeRefuse(XSSFWorkbook workBook,Date beginDate,Date endDate){
 		SimpleDateFormat sf = new SimpleDateFormat("yyyy/MM/dd HH:mm");
-		//OrderLb order = orderService.findById(orderId);
-		List<OrderRefuse> orderRefuses = orderRefuseService.findByOrderLbOrderByTalkTimeAsc(order);
+		List<Map> list = orderProductService.findForExcel(ExcelParams.getRefuseSQL(), beginDate,endDate);
 		// 在workbook中添加一个sheet,对应Excel文件中的sheet
 		XSSFSheet sheet = workBook.createSheet("拒绝订单情况");
-		if(orderRefuses==null)
+		if(list==null)
 			return workBook;
 		ExportUtil exportUtil = new ExportUtil(workBook, sheet);
 		XSSFCellStyle headStyle = exportUtil.getHeadStyle();
@@ -483,52 +482,29 @@ public class OrderLbController {
 			cell.setCellValue("第"+r+"次拒绝解决方案");
 			i = i+5;
 		}
-		//TODO
+		String[] orderRefuses = ExcelParams.orderRefuses;
 		//构建表体数据
-		XSSFRow bodyRow = sheet.createRow(1);
-		cell = bodyRow.createCell(0);
-		cell.setCellStyle(bodyStyle);
-		cell.setCellValue(order.getSysNo());
-		
-		cell = bodyRow.createCell(1);
-		cell.setCellStyle(bodyStyle);
-		cell.setCellValue(order.getCustomer());
-		
-		cell = bodyRow.createCell(2);
-		cell.setCellStyle(bodyStyle);
-		cell.setCellValue(order.getBuildAddress());
-		
-		cell = bodyRow.createCell(3);
-		cell.setCellStyle(bodyStyle);
-		cell.setCellValue(order.getTel());
-		
-		cell = bodyRow.createCell(4);
-		cell.setCellStyle(bodyStyle);
-		cell.setCellValue(order.getOrderNo());
-		
-		int ot = 5; 
-		for(OrderRefuse of:orderRefuses){
-			cell = bodyRow.createCell(ot);
-			cell.setCellStyle(bodyStyle);
-			cell.setCellValue(of.getPeople());
-			
-			cell = bodyRow.createCell(ot+1);
-			cell.setCellStyle(bodyStyle);
-			cell.setCellValue(sf.format(of.getTalkTime()));
-			
-			cell = bodyRow.createCell(ot+2);
-			cell.setCellStyle(bodyStyle);
-			cell.setCellValue(of.getTalkWay());
-			
-			cell = bodyRow.createCell(ot+3);
-			cell.setCellStyle(bodyStyle);
-			cell.setCellValue(of.getReason());
-			
-			cell = bodyRow.createCell(ot+4);
-			cell.setCellStyle(bodyStyle);
-			cell.setCellValue(of.getPlan());
-			
-			ot = ot + 5;
+		for(int c=0;c<list.size();c++){
+			HashMap<String,Object> map = (HashMap<String, Object>) list.get(c);
+			XSSFRow bodyRow = sheet.createRow(c+1);
+			int s = 0;
+			for(String str:orderRefuses){
+				if(s==5){
+					String[] strs1 = map.get(str)==null?new String[max]:map.get(str).toString().split(",");
+					String[] strs2 = map.get(orderRefuses[s+1])==null?new String[max]:map.get(orderRefuses[s+1]).toString().split(",");
+					String[] strs3 = map.get(orderRefuses[s+2])==null?new String[max]:map.get(orderRefuses[s+2]).toString().split(",");
+					String[] strs4 = map.get(orderRefuses[s+3])==null?new String[max]:map.get(orderRefuses[s+3]).toString().split(",");
+					String[] strs5 = map.get(orderRefuses[s+4])==null?new String[max]:map.get(orderRefuses[s+4]).toString().split(",");
+					for(int ss=0;ss<max;ss++){
+						
+					}
+				}else{
+					cell = bodyRow.createCell(s);
+					cell.setCellStyle(bodyStyle);
+					cell.setCellValue(str);
+					s++;
+				}
+			}
 		}
 		return workBook;
 	}
