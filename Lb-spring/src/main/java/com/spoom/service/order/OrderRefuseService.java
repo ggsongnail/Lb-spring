@@ -1,5 +1,6 @@
 package com.spoom.service.order;
 
+import java.util.Date;
 import java.util.List;
 
 import javax.persistence.EntityManager;
@@ -58,5 +59,9 @@ public class OrderRefuseService {
 				em.clear();
 			}
 		}
+	}
+	
+	public int getMaxCount(Date beginDate, Date endDate){
+		return orderRefuseDao.getMaxCount(beginDate, endDate);
 	}
 }

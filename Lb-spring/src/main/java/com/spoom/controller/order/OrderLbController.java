@@ -333,10 +333,10 @@ public class OrderLbController {
 		return workBook;
 	}
 	
-	public XSSFWorkbook writeMainProducts(XSSFWorkbook workBook,int orderId){
+	public XSSFWorkbook writeMainProducts(XSSFWorkbook workBook,Date beginDate,Date endDate){
 		SimpleDateFormat sf = new SimpleDateFormat("yyyy/MM/dd HH:mm");
 		List<String> pList = materialProductService.getMainProductsCombo();
-		List<List<String>> list = orderProductService.findForExcel(ExcelParams.getMaterialSQL(pList), orderId);
+		List<List<String>> list = orderProductService.findForExcel(ExcelParams.getMaterialSQL(pList), beginDate, endDate);
 		// 在workbook中添加一个sheet,对应Excel文件中的sheet
 		XSSFSheet sheet = workBook.createSheet("主要材料销售明细");
 		if(list==null)
@@ -433,9 +433,9 @@ public class OrderLbController {
 		return workBook;
 	}
 	
-	public XSSFWorkbook writeRefuse(XSSFWorkbook workBook,int orderId){
+	public XSSFWorkbook writeRefuse(XSSFWorkbook workBook,Date beginDate,Date endDate){
 		SimpleDateFormat sf = new SimpleDateFormat("yyyy/MM/dd HH:mm");
-		OrderLb order = orderService.findById(orderId);
+		//OrderLb order = orderService.findById(orderId);
 		List<OrderRefuse> orderRefuses = orderRefuseService.findByOrderLbOrderByTalkTimeAsc(order);
 		// 在workbook中添加一个sheet,对应Excel文件中的sheet
 		XSSFSheet sheet = workBook.createSheet("拒绝订单情况");
@@ -463,32 +463,27 @@ public class OrderLbController {
 		cell = headRow.createCell(4);
 		cell.setCellStyle(headStyle);
 		cell.setCellValue("合同编号");
-		int o = 5;int i = 1;
-		for(OrderRefuse of:orderRefuses){
-			cell = headRow.createCell(o);
+		int max = orderRefuseService.getMaxCount(beginDate, endDate);
+		int i = 5;
+		for(int r=1;r<=max;r++){
+			cell = headRow.createCell(i);
 			cell.setCellStyle(headStyle);
-			cell.setCellValue("跟进销售专员");
-			
-			cell = headRow.createCell(o+1);
+			cell.setCellValue("第"+r+"次跟进销售专员");
+			cell = headRow.createCell(i+1);
 			cell.setCellStyle(headStyle);
-			cell.setCellValue("第"+i+"次洽谈时间");
-			
-			cell = headRow.createCell(o+2);
+			cell.setCellValue("第"+r+"次洽谈时间");
+			cell = headRow.createCell(i+2);
 			cell.setCellStyle(headStyle);
-			cell.setCellValue("第"+i+"次洽谈方式");
-			
-			cell = headRow.createCell(o+3);
+			cell.setCellValue("第"+r+"次洽谈方式");
+			cell = headRow.createCell(i+3);
 			cell.setCellStyle(headStyle);
-			cell.setCellValue("第"+i+"次拒绝原因");
-			
-			cell = headRow.createCell(o+4);
+			cell.setCellValue("第"+r+"次拒绝原因");
+			cell = headRow.createCell(i+4);
 			cell.setCellStyle(headStyle);
-			cell.setCellValue("第"+i+"次拒绝解决方案");
-			
-			i++;
-			o = o+5;
+			cell.setCellValue("第"+r+"次拒绝解决方案");
+			i = i+5;
 		}
-		
+		//TODO
 		//构建表体数据
 		XSSFRow bodyRow = sheet.createRow(1);
 		cell = bodyRow.createCell(0);

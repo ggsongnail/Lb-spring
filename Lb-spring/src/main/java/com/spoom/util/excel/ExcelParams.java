@@ -28,4 +28,29 @@ public class ExcelParams {
 	    sb.append("GROUP BY rd.order_id,rd.sys_no,rd.customer"); 
 		return sb.toString();
 	}
+	
+	public static String getRefuseSQL(){
+		String sql = "SELECT rd.sys_no, "+
+	       "rd.customer, "+
+	       "rd.build_address, "+
+	       "rd.tel, "+
+	       "rd.order_no, "+
+	       "GROUP_CONCAT(rd.people ORDER BY rd.talk_time DESC), "+
+	       "GROUP_CONCAT(talk_time ORDER BY rd.talk_time DESC), "+
+	       "GROUP_CONCAT(talk_way ORDER BY rd.talk_time DESC), "+
+	       "GROUP_CONCAT(reason ORDER BY rd.talk_time DESC), "+
+	       "GROUP_CONCAT(plan ORDER BY rd.talk_time DESC) "+
+	  "FROM( "+
+	"SELECT ol.sys_no, ol.customer, ol.build_address, ol.tel, ol.order_no, os.people, os.talk_time, os.talk_way, os.reason, os.plan "+
+	  "FROM order_refuse os "+
+	  "LEFT JOIN order_lb ol on os.order_id= ol.id "+
+	 "where ol.signing_date> ?1 "+
+	   "and signing_date< ?2) rd "+
+	 "GROUP BY rd.sys_no, "+
+	         "rd.customer, "+
+	         "rd.build_address, "+
+	         "rd.tel, "+
+	         "rd.order_no";
+		return sql;
+	}
 }
