@@ -35,11 +35,11 @@ public class ExcelParams {
 	       "rd.build_address, "+
 	       "rd.tel, "+
 	       "rd.order_no, "+
-	       "GROUP_CONCAT(rd.people ORDER BY rd.talk_time DESC) people, "+
-	       "GROUP_CONCAT(talk_time ORDER BY rd.talk_time DESC) talk_time, "+
-	       "GROUP_CONCAT(talk_way ORDER BY rd.talk_time DESC) talk_way, "+
-	       "GROUP_CONCAT(reason ORDER BY rd.talk_time DESC) reason, "+
-	       "GROUP_CONCAT(plan ORDER BY rd.talk_time DESC) plan "+
+	       "GROUP_CONCAT(rd.people ORDER BY rd.talk_time ASC) people, "+
+	       "GROUP_CONCAT(talk_time ORDER BY rd.talk_time ASC) talk_time, "+
+	       "GROUP_CONCAT(talk_way ORDER BY rd.talk_time ASC) talk_way, "+
+	       "GROUP_CONCAT(reason ORDER BY rd.talk_time ASC) reason, "+
+	       "GROUP_CONCAT(plan ORDER BY rd.talk_time ASC) plan "+
 	  "FROM( "+
 	"SELECT ol.sys_no, ol.customer, ol.build_address, ol.tel, ol.order_no, os.people, os.talk_time, os.talk_way, os.reason, os.plan "+
 	  "FROM order_refuse os "+
