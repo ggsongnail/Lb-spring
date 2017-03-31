@@ -5,6 +5,7 @@ import java.net.URLEncoder;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -98,6 +99,47 @@ public class OrderLbController {
 	public OrderLb saveOrder(@RequestBody OrderLb order){
 		orderService.save(order);
 		return order;
+	}
+	
+	
+	@ResponseBody
+	@RequestMapping(value="materialsbill/save",method = RequestMethod.POST)
+	@Transactional
+	public void saveMaterialsBill(@RequestBody Map<String,String> map){
+		ObjectMapper mapper = new ObjectMapper(); 
+		try {
+			OrderLb order = mapper.readValue(map.get("orderLb"), OrderLb.class);
+			CollectionType plistType = mapper.getTypeFactory().constructCollectionType(ArrayList.class, OrderProduct.class);
+			List<OrderProduct> orderProducts = (List<OrderProduct>) mapper.readValue(map.get("materials") , plistType);
+			orderService.save(order);
+			orderProductService.batchUpdate(orderProducts);
+		} catch (JsonParseException e) {
+			e.printStackTrace();
+		} catch (JsonMappingException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	@ResponseBody
+	@RequestMapping(value="artificialsbill/save",method = RequestMethod.POST)
+	@Transactional
+	public void saveArtificialsBill(@RequestBody Map<String,String> map){
+		ObjectMapper mapper = new ObjectMapper(); 
+		try {
+			OrderLb order = mapper.readValue(map.get("orderLb"), OrderLb.class);
+			CollectionType plistType = mapper.getTypeFactory().constructCollectionType(ArrayList.class, OrderProduct.class);
+			List<OrderArtificial> orderArtificials = (List<OrderArtificial>) mapper.readValue(map.get("artificals") , plistType);
+			orderService.save(order);
+			orderArtificialFeeService.batchUpdate(orderArtificials);
+		} catch (JsonParseException e) {
+			e.printStackTrace();
+		} catch (JsonMappingException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	@ResponseBody
@@ -194,7 +236,7 @@ public class OrderLbController {
 	
 	private Specification<OrderLb> getWhereClause(final Map<String,Object> params){
 		System.out.println(params);
-		final SimpleDateFormat sf = new SimpleDateFormat("yyyy/MM/dd HH:mm");
+		final SimpleDateFormat sf = new SimpleDateFormat("yyyy/MM/dd");
 		return new Specification<OrderLb>() {
 			public Predicate toPredicate(Root<OrderLb> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
 				try {
@@ -245,20 +287,6 @@ public class OrderLbController {
 		return map;
 	}
 	
-	@ResponseBody
-	@RequestMapping(value="final/material/save",method = RequestMethod.POST)
-	public OrderLb saveFinalMaterial(@RequestBody List<OrderProductFinal> ops){
-		return null;
-	}
-	
-	@ResponseBody
-	@RequestMapping(value="final/man/save",method = RequestMethod.POST)
-	public OrderLb saveFinalMan(@RequestBody List<OrderArtificialFeeFinal> ops){
-		return null;
-	}
-	
-	
-	
 	//excel导出
 	@ResponseBody
 	@RequestMapping(value="export/excel",method = RequestMethod.GET)
@@ -306,6 +334,8 @@ public class OrderLbController {
 		List<OrderLb> list = orderService.findForExcel(ExcelParams.getOrderSQL(ExcelParams.orderParams), beginDate,endDate);
 		// 在workbook中添加一个sheet,对应Excel文件中的sheet
 		XSSFSheet sheet = workBook.createSheet("销售订单数据");
+		if(list.size()==0)
+			return workBook;
 		ExportUtil exportUtil = new ExportUtil(workBook, sheet);
 		XSSFCellStyle headStyle = exportUtil.getHeadStyle();
 		XSSFCellStyle bodyStyle = exportUtil.getBodyStyle();
@@ -334,12 +364,12 @@ public class OrderLbController {
 	}
 	
 	public XSSFWorkbook writeMainProducts(XSSFWorkbook workBook,Date beginDate,Date endDate){
-		SimpleDateFormat sf = new SimpleDateFormat("yyyy/MM/dd HH:mm");
+		SimpleDateFormat sf = new SimpleDateFormat("yyyy/MM/dd");
 		List<String> pList = materialProductService.getMainProductsCombo();
 		List<Map> list = orderProductService.findForExcel(ExcelParams.getMaterialSQL(pList), beginDate, endDate);
 		// 在workbook中添加一个sheet,对应Excel文件中的sheet
 		XSSFSheet sheet = workBook.createSheet("主要材料销售明细");
-		if(list==null)
+		if(list.size()==0)
 			return workBook;
 		ExportUtil exportUtil = new ExportUtil(workBook, sheet);
 		XSSFCellStyle headStyle = exportUtil.getHeadStyle();
@@ -384,12 +414,12 @@ public class OrderLbController {
 	}
 	
 	public XSSFWorkbook writeAssistProducts(XSSFWorkbook workBook,Date beginDate,Date endDate){
-		SimpleDateFormat sf = new SimpleDateFormat("yyyy/MM/dd HH:mm");
+		SimpleDateFormat sf = new SimpleDateFormat("yyyy/MM/dd");
 		List<String> pList = materialProductService.getAssistProductsCombo();
 		List<Map> list = orderProductService.findForExcel(ExcelParams.getMaterialSQL(pList), beginDate,endDate);
 		// 在workbook中添加一个sheet,对应Excel文件中的sheet
 		XSSFSheet sheet = workBook.createSheet("辅助材料销售明细");
-		if(list==null)
+		if(list.size()==0)
 			return workBook;
 		ExportUtil exportUtil = new ExportUtil(workBook, sheet);
 		XSSFCellStyle headStyle = exportUtil.getHeadStyle();
@@ -434,11 +464,11 @@ public class OrderLbController {
 	}
 	
 	public XSSFWorkbook writeRefuse(XSSFWorkbook workBook,Date beginDate,Date endDate){
-		SimpleDateFormat sf = new SimpleDateFormat("yyyy/MM/dd HH:mm");
+		SimpleDateFormat sf = new SimpleDateFormat("yyyy/MM/dd");
 		List<Map> list = orderProductService.findForExcel(ExcelParams.getRefuseSQL(), beginDate,endDate);
 		// 在workbook中添加一个sheet,对应Excel文件中的sheet
 		XSSFSheet sheet = workBook.createSheet("拒绝订单情况");
-		if(list==null)
+		if(list.size()==0)
 			return workBook;
 		ExportUtil exportUtil = new ExportUtil(workBook, sheet);
 		XSSFCellStyle headStyle = exportUtil.getHeadStyle();
@@ -495,13 +525,40 @@ public class OrderLbController {
 					String[] strs3 = map.get(orderRefuses[s+2])==null?new String[max]:map.get(orderRefuses[s+2]).toString().split(",");
 					String[] strs4 = map.get(orderRefuses[s+3])==null?new String[max]:map.get(orderRefuses[s+3]).toString().split(",");
 					String[] strs5 = map.get(orderRefuses[s+4])==null?new String[max]:map.get(orderRefuses[s+4]).toString().split(",");
-					for(int ss=0;ss<max;ss++){
+						strs1 = strs1.length<max?Arrays.copyOf(strs1,max):strs1;
+						strs2 = strs2.length<max?Arrays.copyOf(strs2,max):strs2;
+						strs3 = strs3.length<max?Arrays.copyOf(strs3,max):strs3;
+						strs4 = strs4.length<max?Arrays.copyOf(strs4,max):strs4;
+						strs5 = strs5.length<max?Arrays.copyOf(strs5,max):strs5;
 						
+					for(int ss=0;ss<max;ss++){
+						cell = bodyRow.createCell(s);
+						cell.setCellStyle(bodyStyle);
+						cell.setCellValue(strs1[ss]==null?"":strs1[ss]);
+						
+						cell = bodyRow.createCell(s+1);
+						cell.setCellStyle(bodyStyle);
+						cell.setCellValue(strs2[ss]==null?"":strs2[ss]);
+						
+						cell = bodyRow.createCell(s+2);
+						cell.setCellStyle(bodyStyle);
+						cell.setCellValue(strs3[ss]==null?"":strs3[ss]);
+						
+						cell = bodyRow.createCell(s+3);
+						cell.setCellStyle(bodyStyle);
+						cell.setCellValue(strs4[ss]==null?"":strs4[ss]);
+						
+						cell = bodyRow.createCell(s+4);
+						cell.setCellStyle(bodyStyle);
+						cell.setCellValue(strs5[ss]==null?"":strs5[ss]);
+						
+						s = s+5;
 					}
+					break;
 				}else{
 					cell = bodyRow.createCell(s);
 					cell.setCellStyle(bodyStyle);
-					cell.setCellValue(str);
+					cell.setCellValue(map.get(str)==null?"":map.get(str)+"");
 					s++;
 				}
 			}

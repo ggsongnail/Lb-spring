@@ -56,9 +56,9 @@ public class OrderLb {
 	
 	/*@DateTimeFormat(pattern="yyyy-MM-dd HH:mm") */
 	@Temporal(TemporalType.TIMESTAMP)
-	@JsonFormat(pattern="yyyy/MM/dd HH:mm",timezone = "GMT+8") 
+	@JsonFormat(pattern="yyyy/MM/dd",timezone = "GMT+8") 
 	private Date signingDate;
-	@JsonFormat(pattern="yyyy/MM/dd HH:mm",timezone = "GMT+8") 
+	@JsonFormat(pattern="yyyy/MM/dd",timezone = "GMT+8") 
 	private Date expectedDate;
 	private Date createDate;
 	private Date updateDate;
@@ -94,6 +94,7 @@ public class OrderLb {
 	private Double grossFinal;
 	
 	private String orderStatus;
+	private String orderFrom;
 	
 	public int getId() {
 		return id;
@@ -406,5 +407,11 @@ public class OrderLb {
 	}
 	public void setOrderStatus(String orderStatus) {
 		this.orderStatus = orderStatus;
+	}
+	public String getOrderFrom() {
+		return orderFrom;
+	}
+	public void setOrderFrom(String orderFrom) {
+		this.orderFrom = orderFrom;
 	}
 }
